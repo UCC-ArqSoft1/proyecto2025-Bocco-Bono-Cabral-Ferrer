@@ -9,3 +9,5 @@ type User struct {
 	Birth_date string `json:"birth_date"`
 	Sex        string `json:"sex"`
 }
+
+type Users []User
