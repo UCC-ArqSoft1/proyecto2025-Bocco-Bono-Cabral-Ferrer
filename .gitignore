@@ -1,0 +1,25 @@
+# Archivos del sistema (macOS, Windows)
+.DS_Store
+Thumbs.db
+
+# Archivos y carpetas generadas por Go
+/bin/
+/pkg/
+/*.exe
+/*.test
+*.out
+
+# Dependencias locales (si usás vendor)
+vendor/
+
+# Archivos de configuración y credenciales
+.env
+*.env
+
+# Configuración de editores
+.vscode/
+.idea/
+*.swp
+
+#variables de entorno sensibles 
+.env
