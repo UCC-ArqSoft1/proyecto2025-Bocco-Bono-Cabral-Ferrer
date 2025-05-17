@@ -1,14 +1,12 @@
 package main
 
 import (
-	"ucc-gorm/db"
-
-	"github.com/gin-gonic/gin"
+	"gym-api/backend/db"
 )
 
 func main() {
 	db.InitDatabase()
-	router := gin.Default
-	router.Use(controllers.AllowCORS)
-	router.POST("/login", userControllers.Login)
+	// router := gin.Default
+	// router.Use(controllers.AllowCORS)
+	// router.POST("/login", userControllers.Login)
 }

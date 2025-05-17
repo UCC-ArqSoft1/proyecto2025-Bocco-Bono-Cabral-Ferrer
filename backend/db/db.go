@@ -1,13 +1,15 @@
 package db
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"gym-api/backend/clients"
 	"gym-api/backend/domain"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -22,8 +24,14 @@ func InitDatabase() {
 		log.Fatal(err)
 		return
 	}
+	dsn := fmt.Sprintf("%s:%v@tcp(%s:%v)/%v",
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"))
 	// Conexión a base de datos SQLite en memoria (solo para pruebas)
-	DB, err = gorm.Open(sqlite.Open("file::memory:?cache=shared"), &gorm.Config{
+	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	// Para usar archivo físico:

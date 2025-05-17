@@ -2,4 +2,4 @@ package clients
 
 import "gorm.io/gorm"
 
-var enrollmentClient *gorm.DB
+var EnrollmentClient *gorm.DB
