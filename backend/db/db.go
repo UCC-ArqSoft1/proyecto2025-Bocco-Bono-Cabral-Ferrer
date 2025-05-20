@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"gym-api/backend/clients"
-	"gym-api/backend/domain"
+	"gym-api/backend/dao"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -30,12 +30,10 @@ func InitDatabase() {
 		os.Getenv("DB_HOST"),
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"))
-	// Conexión a base de datos SQLite en memoria (solo para pruebas)
+
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
-	// Para usar archivo físico:
-	// DB, err = gorm.Open(sqlite.Open("gorm.db"), &gorm.Config{})
 
 	if err != nil {
 		log.Println(" Error al conectar a la base de datos")
@@ -46,10 +44,10 @@ func InitDatabase() {
 
 	// AutoMigrate: crea las tablas si no existen
 	err = DB.AutoMigrate(
-		&domain.UserType{},
-		&domain.User{},
-		&domain.Activity{},
-		&domain.Enrollment{},
+		&dao.UserType{},
+		&dao.User{},
+		&dao.Activity{},
+		&dao.Enrollment{},
 	)
 
 	if err != nil {
