@@ -22,3 +22,9 @@ func Login(email string, password string) (int, string, error) {
 	}
 	return userDAO.Id, token, nil
 }
+func Register(name string, lastName string, email string, password string, birth_date string, sex string) (int, error) {
+	hashedPassword := utils.HashPassword(password)
+	dao.InsertUser(db.DB, name, lastName, email, hashedPassword, birth_date, sex)
+	userDAO, err := dao.GetUserByEmail(db.DB, email)
+	return userDAO.Id, err
+}
