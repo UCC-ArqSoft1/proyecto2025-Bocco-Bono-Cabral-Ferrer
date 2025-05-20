@@ -13,6 +13,7 @@ func main() {
 	db.InitDatabase()
 	router := gin.Default()
 	router.POST("/users/login", userController.Login)
+	router.POST("/users/register", userController.Register)
 	//mapUrls()
 
 	log.Info("Starting server")

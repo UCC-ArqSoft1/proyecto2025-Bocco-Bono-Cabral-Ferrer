@@ -27,3 +27,19 @@ func GetUserByEmail(DB *gorm.DB, email string) (User, error) {
 	}
 	return userDAO, nil
 }
+func InsertUser(DB *gorm.DB, name string, lastName string, email string, password string, birthDate string, sex string) (int, error) {
+	userDAO := User{
+		FirstName:    name,
+		LastName:     lastName,
+		Email:        email,
+		PasswordHash: password,
+		Birth_date:   birthDate,
+		Sex:          sex,
+		UserTypeId:   1,
+	}
+	txn := DB.Create(&userDAO)
+	if txn.Error != nil {
+		return 0, fmt.Errorf("error inserting user: %w", txn.Error)
+	}
+	return userDAO.Id, nil
+}
