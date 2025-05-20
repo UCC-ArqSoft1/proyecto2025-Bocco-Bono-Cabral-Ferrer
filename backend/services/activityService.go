@@ -1,8 +1,8 @@
 package services
 
 import (
-	"proyecto2025/backend/dao"
-	"proyecto2025/backend/domain"
+	"gym-api/backend/dao"
+	"gym-api/backend/domain"
 )
 
 type ActivityService struct {
