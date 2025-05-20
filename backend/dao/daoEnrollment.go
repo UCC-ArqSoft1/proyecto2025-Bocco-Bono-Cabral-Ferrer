@@ -3,12 +3,12 @@ package dao
 import "time"
 
 type Enrollment struct {
-	Id             int       `json:"id"`
-	UserId         int       `json:"user_id"`
-	User           User      `json:"user"`
-	ActivityId     int       `json:"activity_id"`
-	Activity       Activity  `json:"activity"`
-	EnrollmentDate time.Time `json:"enrollment_date"`
+	Id             int `gorm:"primaryKey"`
+	UserId         int
+	User           User `gorm:"foreignKey:UserId"`
+	ActivityId     int
+	Activity       Activity `gorm:"foreignKey:ActivityId"`
+	EnrollmentDate time.Time
 }
 
 type Enrollments []Enrollment
