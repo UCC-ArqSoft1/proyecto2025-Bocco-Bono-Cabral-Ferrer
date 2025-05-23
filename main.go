@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2/log"
 
+	activitiesController "gym-api/backend/controllers/activity"
 	userController "gym-api/backend/controllers/user"
 )
 
@@ -14,6 +15,9 @@ func main() {
 	router := gin.Default()
 	router.POST("/users/login", userController.Login)
 	router.POST("/users/register", userController.Register)
+	router.GET("/activities", activitiesController.GetActivities)
+	router.GET("/activities/:id", activitiesController.GetActivityByID)
+
 	//mapUrls()
 
 	log.Info("Starting server")
