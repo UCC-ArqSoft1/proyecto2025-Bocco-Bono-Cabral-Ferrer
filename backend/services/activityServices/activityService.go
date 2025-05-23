@@ -12,3 +12,6 @@ func GetActivities() ([]domain.Activity, error) {
 func GetactivityByID(id int) (domain.Activity, error) {
 	return dao.GetActivityByID(db.DB, id)
 }
+func CreateActivity(activity domain.Activity) (domain.Activity, error) {
+	return dao.CreateActivity(db.DB, activity)
+}

@@ -58,3 +58,28 @@ func GetActivityByID(DB *gorm.DB, id int) (domain.Activity, error) {
 		Hour:        activityDAO.Hour,
 	}, nil
 }
+func CreateActivity(DB *gorm.DB, activity domain.Activity) (domain.Activity, error) {
+	activityDAO := Activity{
+		Name:        activity.Name,
+		Description: activity.Description,
+		Capacity:    activity.Capacity,
+		Category:    activity.Category,
+		Profesor:    activity.Profesor,
+		Day:         activity.Day,
+		Hour:        activity.Hour,
+	}
+	txn := DB.Create(&activityDAO)
+	if txn.Error != nil {
+		return domain.Activity{}, fmt.Errorf("error creating activity: %w", txn.Error)
+	}
+	return domain.Activity{
+		Id:          activityDAO.Id,
+		Name:        activityDAO.Name,
+		Description: activityDAO.Description,
+		Capacity:    activityDAO.Capacity,
+		Category:    activityDAO.Category,
+		Profesor:    activityDAO.Profesor,
+		Day:         activityDAO.Day,
+		Hour:        activityDAO.Hour,
+	}, nil
+}
