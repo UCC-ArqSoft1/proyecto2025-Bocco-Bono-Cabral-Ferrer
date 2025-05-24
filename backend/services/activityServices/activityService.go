@@ -12,3 +12,6 @@ func GetActivities() ([]domain.Activity, error) {
 func GetactivityByID(id int) (domain.Activity, error) {
 	return dao.GetActivityByID(db.DB, id)
 }
+func GetActivitiesByFilters(filters map[string]string) ([]domain.Activity, error) {
+	return dao.GetActivitiesByFilters(db.DB, filters)
+}
