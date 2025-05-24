@@ -15,7 +15,7 @@ func main() {
 	router := gin.Default()
 	router.POST("/users/login", userController.Login)
 	router.POST("/users/register", userController.Register)
-	router.GET("/activities", activitiesController.GetActivities)
+	router.GET("/activities", activitiesController.GetActivitiesByFilters)
 	router.GET("/activities/:id", activitiesController.GetActivityByID)
 
 	//mapUrls()
