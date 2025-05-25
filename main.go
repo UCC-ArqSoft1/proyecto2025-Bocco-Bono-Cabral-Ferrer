@@ -17,6 +17,7 @@ func main() {
 	router.POST("/users/register", userController.Register)
 	router.GET("/activities", activitiesController.GetActivities)
 	router.GET("/activities/:id", activitiesController.GetActivityByID)
+	router.POST("/activities", activitiesController.CreateActivity)
 
 	//mapUrls()
 
