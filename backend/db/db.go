@@ -2,11 +2,9 @@ package db
 
 import (
 	"fmt"
+	"gym-api/backend/dao"
 	"log"
 	"os"
-
-	"gym-api/backend/clients"
-	"gym-api/backend/dao"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -55,10 +53,4 @@ func InitDatabase() {
 	} else {
 		log.Println("Finishing Migration Database Tables")
 	}
-
-	// Inyectar DB en los paquetes clients
-	clients.UserClient = DB
-	clients.ActivityClient = DB
-	clients.UserTypeClient = DB
-	clients.EnrollmentClient = DB
 }

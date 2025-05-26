@@ -1,17 +1,25 @@
 package services
 
 import (
-	"gym-api/backend/dao"
-	"gym-api/backend/db"
+	clients "gym-api/backend/clients/activityclient"
 	"gym-api/backend/domain"
 )
 
-func GetActivities() ([]domain.Activity, error) {
-	return dao.GetActivities(db.DB)
+type ActivityServices struct {
+	ActivityClients clients.MySQL
 }
-func GetactivityByID(id int) (domain.Activity, error) {
-	return dao.GetActivityByID(db.DB, id)
+type ActivityService interface {
+	GetActivities() ([]domain.Activity, error)
+	GetactivityByID(id int) (domain.Activity, error)
+	GetActivitiesByFilters(keyword string) ([]domain.Activity, error)
 }
-func GetActivitiesByFilters(filters map[string]string) ([]domain.Activity, error) {
-	return dao.GetActivitiesByFilters(db.DB, filters)
+
+func (a ActivityServices) GetActivities() ([]domain.Activity, error) {
+	return a.ActivityClients.GetActivities()
+}
+func (a ActivityServices) GetactivityByID(id int) (domain.Activity, error) {
+	return a.ActivityClients.GetActivityByID(id)
+}
+func (a ActivityServices) GetActivitiesByFilters(keyword string) ([]domain.Activity, error) {
+	return a.ActivityClients.GetActivitiesByFilters(keyword)
 }
