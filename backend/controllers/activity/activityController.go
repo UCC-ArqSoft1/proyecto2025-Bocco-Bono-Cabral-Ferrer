@@ -1,50 +1,48 @@
 package controllers
 
 import (
-	"errors"
 	services "gym-api/backend/services/activityServices"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func GetActivities(ctx *gin.Context) {
-	activities, err := services.GetActivities()
-	if err != nil {
-		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	ctx.IndentedJSON(http.StatusOK, activities)
+type ActivityController struct {
+	ActivityService services.ActivityService
+}
+type ControllerMethods interface {
+	GetActivities(ctx *gin.Context)
+	GetActivityByID(ctx *gin.Context)
 }
 
-func GetActivityByID(ctx *gin.Context) {
+func (ac ActivityController) GetActivities(ctx *gin.Context) {
+	if keyword, ok := ctx.GetQuery("keyword"); !ok {
+		Activities, err := ac.ActivityService.GetActivities()
+		if err != nil {
+			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.IndentedJSON(http.StatusOK, Activities)
+		return
+	} else {
+		Activities, err := ac.ActivityService.GetActivitiesByFilters(keyword)
+		if err != nil {
+			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.IndentedJSON(http.StatusOK, Activities)
+	}
+
+}
+
+func (ac ActivityController) GetActivityByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	idInt, _ := strconv.Atoi(id)
-	activity, err := services.GetactivityByID(idInt)
+	activity, err := ac.ActivityService.GetactivityByID(idInt)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	ctx.IndentedJSON(http.StatusOK, activity)
-}
-
-func GetActivitiesByFilters(ctx *gin.Context) {
-	filters := map[string]string{
-		"keyword":  ctx.Query("keyword"),
-		"category": ctx.Query("category"),
-		"hour":     ctx.Query("hour"),
-	}
-	activities, err := services.GetActivitiesByFilters(filters)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "No se encontraron actividades"})
-		} else {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		return
-	}
-
-	ctx.JSON(http.StatusOK, activities)
 }

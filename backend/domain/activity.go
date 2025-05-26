@@ -1,14 +1,21 @@
 package domain
 
 type Activity struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Capacity    int    `json:"capacity"`
-	Category    string `json:"category"`
-	Profesor    string `json:"profesor"`
-	Day         string `json:"day"`
-	Hour        string `json:"hour"`
+	Id               int                `json:"id"`
+	Name             string             `json:"name"`
+	Description      string             `json:"description"`
+	Capacity         int                `json:"capacity"`
+	Category         string             `json:"category"`
+	Profesor         string             `json:"profesor"`
+	ActivitySchedule []ActivitySchedule `json:"activity_schedule"`
+}
+
+type ActivitySchedule struct {
+	Id         int    `json:"id"`
+	ActivityId int    `json:"activity_id"`
+	Day        string `json:"day"`
+	StartTime  string `json:"start_time"`
+	EndTime    string `json:"end_time"`
 }
 
 type Activities []Activity

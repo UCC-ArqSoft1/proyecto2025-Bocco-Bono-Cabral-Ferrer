@@ -1,4 +1,4 @@
-package services
+/*package services
 
 import (
 	"fmt"
@@ -28,3 +28,4 @@ func Register(name string, lastName string, email string, password string, birth
 	userDAO, err := dao.GetUserByEmail(db.DB, email)
 	return userDAO.Id, err
 }
+*/
