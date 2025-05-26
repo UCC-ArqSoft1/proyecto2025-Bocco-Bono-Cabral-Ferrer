@@ -16,6 +16,14 @@ func (m MockActivityService) GetActivities() ([]domain.Activity, error) {
 			Profesor:    "Juan",
 			Capacity:    20,
 		},
+		{
+			Id:          2,
+			Name:        "Boxeo",
+			Description: "Clases para niños principiantes",
+			Category:    "Deporte de Contacto",
+			Profesor:    "Myke Tyson",
+			Capacity:    15,
+		},
 	}, nil
 }
 
