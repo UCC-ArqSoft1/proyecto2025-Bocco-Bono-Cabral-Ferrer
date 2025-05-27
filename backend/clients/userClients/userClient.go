@@ -7,26 +7,39 @@ import (
 	"gorm.io/gorm"
 )
 
-type MySQLUserRepository struct {
+// “Un repositorio no es la base de datos, es la puerta de entrada a ella desde el dominio.”
+type UserRepository struct {
 	DB *gorm.DB
 }
 
-type UserClient interface {
-	GetUsers() ([]dao.User, error)
+type UserRepositoryInterface interface {
+	GetUserByEmail(email string) (dao.User, error)
 	GetUserByID(id int) (dao.User, error)
-	GetUsersByFilters(keyword string) ([]dao.User, error)
+	InsertUser(name string,
+		lastName string,
+		email string,
+		password string,
+		birthDate string,
+		sex string) (dao.User, error)
 }
 
-func (mySQLDatasource MySQLUserRepository) GetUserByEmail(email string) (dao.User, error) {
+func (mySQLDatasource UserRepository) GetUserByEmail(email string) (dao.User, error) {
 	var user dao.User
 	result := mySQLDatasource.DB.First(&user, "email = ?", email)
+	if result.Error != nil {
+		return dao.User{}, fmt.Errorf("%w", result.Error)
+	}
+	return user, nil
+}
+func (mySQLDatasource UserRepository) GetUserByID(id int) (dao.User, error) {
+	var user dao.User
+	result := mySQLDatasource.DB.First(&user, id)
 	if result.Error != nil {
 		return dao.User{}, fmt.Errorf("error getting user: %w", result.Error)
 	}
 	return user, nil
 }
-
-func (mySQLDatasource MySQLUserRepository) InsertUser(name string, lastName string, email string, password string, birthDate string, sex string) (int, error) {
+func (mySQLDatasource UserRepository) InsertUser(name string, lastName string, email string, password string, birthDate string, sex string) (dao.User, error) {
 	user := dao.User{
 		FirstName:    name,
 		LastName:     lastName,
@@ -38,7 +51,7 @@ func (mySQLDatasource MySQLUserRepository) InsertUser(name string, lastName stri
 	}
 	txn := mySQLDatasource.DB.Create(&user)
 	if txn.Error != nil {
-		return 0, fmt.Errorf("error inserting user: %w", txn.Error)
+		return dao.User{}, fmt.Errorf("error inserting user: %w", txn.Error)
 	}
-	return user.Id, nil
+	return user, nil
 }

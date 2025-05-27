@@ -6,17 +6,17 @@ import (
 	"gym-api/backend/domain"
 )
 
-type ActivityServices struct {
-	ActivityClients clients.MySQLActivityRepository
+type ActivityServiceImpl struct {
+	Repo clients.ActivityRepositoryInterface
 }
-type ActivityService interface {
+type ActivityServiceInterface interface {
 	GetActivities() ([]domain.Activity, error)
 	GetactivityByID(id int) (domain.Activity, error)
 	GetActivitiesByFilters(keyword string) ([]domain.Activity, error)
 }
 
-func (a ActivityServices) GetActivities() ([]domain.Activity, error) {
-	daoActivities, err := a.ActivityClients.GetActivities()
+func (a ActivityServiceImpl) GetActivities() ([]domain.Activity, error) {
+	daoActivities, err := a.Repo.GetActivities()
 	if err != nil {
 		return nil, err
 	}
@@ -26,8 +26,8 @@ func (a ActivityServices) GetActivities() ([]domain.Activity, error) {
 	}
 	return dtoActivities, nil
 }
-func (a ActivityServices) GetactivityByID(id int) (domain.Activity, error) {
-	daoActivity, err := a.ActivityClients.GetActivityByID(id)
+func (a ActivityServiceImpl) GetactivityByID(id int) (domain.Activity, error) {
+	daoActivity, err := a.Repo.GetActivityByID(id)
 	if err != nil {
 		return domain.Activity{}, err
 	}
@@ -35,8 +35,8 @@ func (a ActivityServices) GetactivityByID(id int) (domain.Activity, error) {
 	dtoActivity = dao.DaoToDto(daoActivity)
 	return dtoActivity, nil
 }
-func (a ActivityServices) GetActivitiesByFilters(keyword string) ([]domain.Activity, error) {
-	daoActivities, err := a.ActivityClients.GetActivitiesByFilters(keyword)
+func (a ActivityServiceImpl) GetActivitiesByFilters(keyword string) ([]domain.Activity, error) {
+	daoActivities, err := a.Repo.GetActivitiesByFilters(keyword)
 	if err != nil {
 		return nil, err
 	}
