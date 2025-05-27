@@ -18,20 +18,20 @@ type ControllerMethods interface {
 
 func (ac ActivityController) GetActivities(ctx *gin.Context) {
 	if keyword, ok := ctx.GetQuery("keyword"); !ok {
-		Activities, err := ac.ActivityService.GetActivities()
+		dtoActivities, err := ac.ActivityService.GetActivities()
 		if err != nil {
 			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		ctx.IndentedJSON(http.StatusOK, Activities)
+		ctx.IndentedJSON(http.StatusOK, dtoActivities)
 		return
 	} else {
-		Activities, err := ac.ActivityService.GetActivitiesByFilters(keyword)
+		dtoActivities, err := ac.ActivityService.GetActivitiesByFilters(keyword)
 		if err != nil {
 			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
-		ctx.IndentedJSON(http.StatusOK, Activities)
+		ctx.IndentedJSON(http.StatusOK, dtoActivities)
 	}
 
 }
@@ -39,10 +39,10 @@ func (ac ActivityController) GetActivities(ctx *gin.Context) {
 func (ac ActivityController) GetActivityByID(ctx *gin.Context) {
 	id := ctx.Param("id")
 	idInt, _ := strconv.Atoi(id)
-	activity, err := ac.ActivityService.GetactivityByID(idInt)
+	dtoActivity, err := ac.ActivityService.GetactivityByID(idInt)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.IndentedJSON(http.StatusOK, activity)
+	ctx.IndentedJSON(http.StatusOK, dtoActivity)
 }

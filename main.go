@@ -1,14 +1,17 @@
 package main
 
 import (
-	clients "gym-api/backend/clients/activityclient"
+	activityClients "gym-api/backend/clients/activityclient"
+	userClients "gym-api/backend/clients/userClients"
+	userControllers "gym-api/backend/controllers/user"
 	"gym-api/backend/db"
-	services "gym-api/backend/services/activityServices"
+	activityServices "gym-api/backend/services/activityServices"
+	userServices "gym-api/backend/services/userServices"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2/log"
 
-	controllers "gym-api/backend/controllers/activity"
+	activityControllers "gym-api/backend/controllers/activity"
 	//userController "gym-api/backend/controllers/user"
 )
 
@@ -19,14 +22,17 @@ func main() {
 	router := gin.Default()
 
 	// Inyección manual de dependencias
-	mysql := clients.MySQL{DB: dbInstance.DB}
-	activityService := services.ActivityServices{ActivityClients: mysql}
-	activityController := controllers.ActivityController{ActivityService: activityService}
+	mysql := activityClients.MySQLActivityRepository{DB: dbInstance.DB}
+	activityService := activityServices.ActivityServices{ActivityClients: mysql}
+	activityController := activityControllers.ActivityController{ActivityService: activityService}
 
-	/*// Rutas
+	userRepo := userClients.MySQLUserRepository{DB: dbInstance.DB}
+	userService := userServices.UserServices{UserClient: userRepo}
+	userController := userControllers.UserController{UserService: userService}
+
 	router.POST("/users/login", userController.Login)
 	router.POST("/users/register", userController.Register)
-	*/
+
 	router.GET("/activities", activityController.GetActivities)
 	router.GET("/activities/:id", activityController.GetActivityByID)
 

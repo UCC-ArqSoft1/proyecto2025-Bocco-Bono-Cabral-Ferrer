@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	jwtDuration = time.Hour * 24
+	jwtDuration = time.Hour * 1
 	jwtSecret   = "jwtSecret"
 )
 

@@ -1,49 +1,56 @@
 package clients
 
 import (
-	"gym-api/backend/domain"
+	"gym-api/backend/dao"
 
 	"gorm.io/gorm"
 )
 
-type MySQL struct {
+type MySQLActivityRepository struct {
 	DB *gorm.DB
 }
 
 type ActivityClients interface {
-	GetActivities() ([]domain.Activity, error)
-	GetActivityByID(id int) (domain.Activity, error)
-	GetActivitiesByFilters(keyword string) ([]domain.Activity, error)
+	GetActivities() ([]dao.Activity, error)
+	GetActivityByID(id int) (dao.Activity, error)
+	GetActivitiesByFilters(keyword string) ([]dao.Activity, error)
 }
 
 // service
-func (mySQLDatasource MySQL) GetActivities() ([]domain.Activity, error) {
-	var activities []domain.Activity
-	result := mySQLDatasource.DB.Preload("activity_schedule").
-		Joins("JOIN activity_schedule ON activity_schedule.activity_id = activities.id").
-		Find(&activities)
+func (mySQLDatasource MySQLActivityRepository) GetActivities() ([]dao.Activity, error) {
+	var activities []dao.Activity
+	result := mySQLDatasource.DB.Preload("Schedules").Find(&activities)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 	return activities, nil
 }
-func (mySQLDatasource MySQL) GetActivityByID(id int) (domain.Activity, error) {
-	var activity domain.Activity
+
+func (mySQLDatasource MySQLActivityRepository) GetActivityByID(id int) (dao.Activity, error) {
+	var activity dao.Activity
 
 	result := mySQLDatasource.DB.First(&activity, id)
 	if result.Error != nil {
-		return domain.Activity{}, result.Error
+		return dao.Activity{}, result.Error
 	}
 	return activity, nil
 }
 
-func (mySQLDatasource MySQL) GetActivitiesByFilters(keyword string) ([]domain.Activity, error) {
-	var activities []domain.Activity
+func (mySQLDatasource MySQLActivityRepository) GetActivitiesByFilters(keyword string) ([]dao.Activity, error) {
+	var activities []dao.Activity
 	Keyword := "%" + keyword + "%"
-	result := mySQLDatasource.DB.Preload("activity_schedule").
-		Joins("JOIN activity_schedule ON activity_schedule.activity_id = activities.id").
-		Where("activities.name LIKE ? OR activities.description LIKE ? OR activities.category LIKE ? OR activity_schedule.day LIKE ? OR activity_schedule.start_time LIKE ?", Keyword, Keyword, Keyword, Keyword, Keyword).
+	result := mySQLDatasource.DB.
+		Joins("JOIN activity_schedules ON activity_schedules.activity_id = activities.id").
+		Where(`
+		activities.name LIKE ? OR 
+		activities.description LIKE ? OR 
+		activities.category LIKE ? OR 
+		activity_schedules.day LIKE ? OR 
+		activity_schedules.start_time LIKE ?
+	`, Keyword, Keyword, Keyword, Keyword, Keyword).
+		Preload("Schedules").
 		Find(&activities)
+
 	if result.Error != nil {
 		return nil, result.Error
 	}

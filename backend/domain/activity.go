@@ -1,13 +1,13 @@
 package domain
 
 type Activity struct {
-	Id               int                `json:"id"`
-	Name             string             `json:"name"`
-	Description      string             `json:"description"`
-	Capacity         int                `json:"capacity"`
-	Category         string             `json:"category"`
-	Profesor         string             `json:"profesor"`
-	ActivitySchedule []ActivitySchedule `json:"activity_schedule"`
+	Id          int                `json:"id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Capacity    int                `json:"capacity"`
+	Category    string             `json:"category"`
+	Profesor    string             `json:"profesor"`
+	Schedules   []ActivitySchedule `json:"schedules"`
 }
 
 type ActivitySchedule struct {

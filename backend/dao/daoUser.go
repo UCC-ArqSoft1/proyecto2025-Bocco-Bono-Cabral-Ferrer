@@ -19,14 +19,16 @@ type User struct {
 }
 type Users []User
 
-func GetUserByEmail(DB *gorm.DB, email string) (User, error) {
-	var userDAO User
-	txn := DB.First(&userDAO, "email = ?", email)
-	if txn.Error != nil {
-		return User{}, fmt.Errorf("error getting user: %w", txn.Error)
+/*
+	func GetUserByEmail(DB *gorm.DB, email string) (User, error) {
+		var userDAO User
+		txn := DB.First(&userDAO, "email = ?", email)
+		if txn.Error != nil {
+			return User{}, fmt.Errorf("error getting user: %w", txn.Error)
+		}
+		return userDAO, nil
 	}
-	return userDAO, nil
-}
+*/
 func InsertUser(DB *gorm.DB, name string, lastName string, email string, password string, birthDate string, sex string) (int, error) {
 	userDAO := User{
 		FirstName:    name,
