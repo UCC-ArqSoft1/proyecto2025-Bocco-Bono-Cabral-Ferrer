@@ -12,10 +12,16 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-var DB *gorm.DB
+type MySQLDB struct {
+	DB *gorm.DB
+}
 
-func InitDatabase() {
+type Databases interface {
+	Connect()
+	Migrate()
+}
 
+func (db *MySQLDB) Connect() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println(" Error al conectar a la base de datos")
@@ -29,7 +35,7 @@ func InitDatabase() {
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_NAME"))
 
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+	db.DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 
@@ -39,12 +45,14 @@ func InitDatabase() {
 	} else {
 		log.Println(" Conexión a base de datos exitosa")
 	}
+}
 
-	// AutoMigrate: crea las tablas si no existen
-	err = DB.AutoMigrate(
+func (db *MySQLDB) Migrate() {
+	err := db.DB.AutoMigrate(
 		&dao.UserType{},
 		&dao.User{},
 		&dao.Activity{},
+		&dao.ActivitySchedule{},
 		&dao.Enrollment{},
 	)
 
