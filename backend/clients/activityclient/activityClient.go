@@ -6,18 +6,17 @@ import (
 	"gorm.io/gorm"
 )
 
-type MySQLActivityRepository struct {
+type ActivityRepository struct {
 	DB *gorm.DB
 }
 
-type ActivityClients interface {
+type ActivityRepositoryInterface interface {
 	GetActivities() ([]dao.Activity, error)
 	GetActivityByID(id int) (dao.Activity, error)
 	GetActivitiesByFilters(keyword string) ([]dao.Activity, error)
 }
 
-// service
-func (mySQLDatasource MySQLActivityRepository) GetActivities() ([]dao.Activity, error) {
+func (mySQLDatasource ActivityRepository) GetActivities() ([]dao.Activity, error) {
 	var activities []dao.Activity
 	result := mySQLDatasource.DB.Preload("Schedules").Find(&activities)
 	if result.Error != nil {
@@ -26,7 +25,7 @@ func (mySQLDatasource MySQLActivityRepository) GetActivities() ([]dao.Activity, 
 	return activities, nil
 }
 
-func (mySQLDatasource MySQLActivityRepository) GetActivityByID(id int) (dao.Activity, error) {
+func (mySQLDatasource ActivityRepository) GetActivityByID(id int) (dao.Activity, error) {
 	var activity dao.Activity
 
 	result := mySQLDatasource.DB.First(&activity, id)
@@ -36,7 +35,7 @@ func (mySQLDatasource MySQLActivityRepository) GetActivityByID(id int) (dao.Acti
 	return activity, nil
 }
 
-func (mySQLDatasource MySQLActivityRepository) GetActivitiesByFilters(keyword string) ([]dao.Activity, error) {
+func (mySQLDatasource ActivityRepository) GetActivitiesByFilters(keyword string) ([]dao.Activity, error) {
 	var activities []dao.Activity
 	Keyword := "%" + keyword + "%"
 	result := mySQLDatasource.DB.
@@ -45,9 +44,10 @@ func (mySQLDatasource MySQLActivityRepository) GetActivitiesByFilters(keyword st
 		activities.name LIKE ? OR 
 		activities.description LIKE ? OR 
 		activities.category LIKE ? OR 
+		activities.profesor LIKE ? OR
 		activity_schedules.day LIKE ? OR 
 		activity_schedules.start_time LIKE ?
-	`, Keyword, Keyword, Keyword, Keyword, Keyword).
+	`, Keyword, Keyword, Keyword, Keyword, Keyword, Keyword).
 		Preload("Schedules").
 		Find(&activities)
 

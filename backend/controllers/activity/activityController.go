@@ -9,9 +9,9 @@ import (
 )
 
 type ActivityController struct {
-	ActivityService services.ActivityService
+	ActivityService services.ActivityServiceInterface
 }
-type ControllerMethods interface {
+type ActivityControllersInterface interface {
 	GetActivities(ctx *gin.Context)
 	GetActivityByID(ctx *gin.Context)
 }

@@ -1,37 +1,44 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	clients "gym-api/backend/clients/userClients"
 	"gym-api/backend/utils"
 )
 
-type UserServices struct {
-	UserClient clients.MySQLUserRepository
+type UserService struct {
+	Repo clients.UserRepositoryInterface
 }
 
-type UserService interface {
-	Login(email string, password string) (int, string, error)
-	Register(name string, lastName string, email string, password string, birth_date string, sex string) (int, error)
+type UserServiceInterface interface {
+	Login(email string, password string) (int, string, int, error)
+	Register(name string, lastName string, email string, password string, birth_date string, sex string) (int, int, error)
 }
 
-func (services UserServices) Login(email string, password string) (int, string, error) {
-	daoUser, err := services.UserClient.GetUserByEmail(email)
+func (services UserService) Login(email string, password string) (int, string, int, error) {
+	daoUser, err := services.Repo.GetUserByEmail(email)
 	if err != nil {
-		return 0, "", fmt.Errorf("error getting user: %w", err)
+		return 0, "", 0, fmt.Errorf("error getting user: %w", err)
 	}
 	if utils.HashPassword(password) != daoUser.PasswordHash {
-		return 0, "", fmt.Errorf("invalid password")
+		return 0, "", 0, fmt.Errorf("invalid password")
 	}
 	token, err := utils.GenerateJWT(daoUser.Id)
 	if err != nil {
-		return 0, "", fmt.Errorf("error generating token: %w", err)
+		return 0, "", 0, fmt.Errorf("error generating token: %w", err)
 	}
-	return daoUser.Id, token, nil
+	return daoUser.Id, token, daoUser.UserTypeId, nil
 }
-func (services UserServices) Register(name string, lastName string, email string, password string, birth_date string, sex string) (int, error) {
+
+var ErrEmailAlreadyExists = errors.New("email already in use")
+
+func (services UserService) Register(name string, lastName string, email string, password string, birth_date string, sex string) (int, int, error) {
+	userDAO, err := services.Repo.GetUserByEmail(email)
+	if userDAO.Id != 0 {
+		return 0, 0, ErrEmailAlreadyExists
+	}
 	hashedPassword := utils.HashPassword(password)
-	services.UserClient.InsertUser(name, lastName, email, hashedPassword, birth_date, sex)
-	userDAO, err := services.UserClient.GetUserByEmail(email)
-	return userDAO.Id, err
+	services.Repo.InsertUser(name, lastName, email, hashedPassword, birth_date, sex)
+	return userDAO.Id, userDAO.UserTypeId, err
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"errors"
 	"gym-api/backend/domain"
 	services "gym-api/backend/services/userServices"
 	"net/http"
@@ -9,9 +10,9 @@ import (
 )
 
 type UserController struct {
-	UserService services.UserServices
+	UserService services.UserServiceInterface
 }
-type ControllerMethods interface {
+type UserControllerInterface interface {
 	Login(ctx *gin.Context)
 	Register(ctx *gin.Context)
 }
@@ -23,15 +24,16 @@ func (uc UserController) Login(ctx *gin.Context) {
 		return
 	}
 
-	userID, token, err := uc.UserService.Login(request.Email, request.Password)
+	userID, token, userTypeId, err := uc.UserService.Login(request.Email, request.Password)
 	if err != nil {
 		ctx.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"user_id": userID,
-		"token":   token,
+	ctx.JSON(http.StatusCreated, gin.H{
+		"user_id":      userID,
+		"token":        token,
+		"user_type_id": userTypeId,
 	})
 
 }
@@ -42,13 +44,18 @@ func (uc UserController) Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	userID, err := uc.UserService.Register(request.FirstName, request.LastName, request.Email, request.Password, request.Birth_date, request.Sex)
+	userID, userTypeId, err := uc.UserService.Register(request.FirstName, request.LastName, request.Email, request.Password, request.Birth_date, request.Sex)
 	if err != nil {
+		if errors.Is(err, services.ErrEmailAlreadyExists) {
+			ctx.JSON(http.StatusConflict, gin.H{"error": "Email ya en uso"})
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{
-		"user_id": userID,
-		"message": "User registered successfully",
+	ctx.JSON(http.StatusCreated, gin.H{
+		"user_id":      userID,
+		"user_type_id": userTypeId,
+		"message":      "User registered successfully",
 	})
 }

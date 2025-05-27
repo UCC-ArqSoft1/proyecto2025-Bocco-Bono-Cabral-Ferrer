@@ -22,12 +22,12 @@ func main() {
 	router := gin.Default()
 
 	// Inyección manual de dependencias
-	mysql := activityClients.MySQLActivityRepository{DB: dbInstance.DB}
-	activityService := activityServices.ActivityServices{ActivityClients: mysql}
+	mysql := activityClients.ActivityRepository{DB: dbInstance.DB}
+	activityService := activityServices.ActivityServiceImpl{Repo: mysql}
 	activityController := activityControllers.ActivityController{ActivityService: activityService}
 
-	userRepo := userClients.MySQLUserRepository{DB: dbInstance.DB}
-	userService := userServices.UserServices{UserClient: userRepo}
+	userRepo := userClients.UserRepository{DB: dbInstance.DB}
+	userService := userServices.UserService{Repo: userRepo}
 	userController := userControllers.UserController{UserService: userService}
 
 	router.POST("/users/login", userController.Login)
