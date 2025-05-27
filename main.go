@@ -13,11 +13,13 @@ import (
 )
 
 func main() {
-	db.InitDatabase()
+	dbInstance := db.MySQLDB{}
+	dbInstance.Connect()
+	dbInstance.Migrate()
 	router := gin.Default()
 
 	// Inyección manual de dependencias
-	mysql := clients.MySQL{DB: db.DB}
+	mysql := clients.MySQL{DB: dbInstance.DB}
 	activityService := services.ActivityServices{ActivityClients: mysql}
 	activityController := controllers.ActivityController{ActivityService: activityService}
 
