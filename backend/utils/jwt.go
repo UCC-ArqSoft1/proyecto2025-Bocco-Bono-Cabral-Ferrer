@@ -30,6 +30,7 @@ func GenerateJWT(userID int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Firmar el token
+	fmt.Println(jwtSecret)
 	tokenString, err := token.SignedString([]byte(jwtSecret))
 	if err != nil {
 		return "", fmt.Errorf("error generating token: %w", err)
