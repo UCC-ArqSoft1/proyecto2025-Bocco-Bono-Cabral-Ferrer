@@ -3,6 +3,7 @@ package clients
 import (
 	"errors"
 	"gym-api/backend/dao"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -13,38 +14,47 @@ type EnrollmentRepository struct {
 
 type EnrollmentRepositoryInterface interface {
 	IsEnrolled(userId, activityId int) (bool, error)
-	CountEnrollments(activityId int) (int, error)
+	CountEnrollments(activityId int) (int, int, error)
 	CreateEnrollment(userId, activityId int) error
 }
 
 func (er EnrollmentRepository) IsEnrolled(userId, activityId int) (bool, error) {
-	var enrollments dao.Enrollment
-	result := er.DB.First(&enrollments, userId, activityId)
+	var enrollment dao.Enrollment
+
+	result := er.DB.
+		Where("user_id = ? AND activity_id = ?", userId, activityId).
+		First(&enrollment)
+
 	if result.Error != nil {
-		return true, result.Error
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
+		return false, result.Error
 	}
-	if enrollments.Id != 0 {
-		return true, nil
-	}
-	return false, nil
+
+	return true, nil
 }
 
-func (er EnrollmentRepository) CountEnrollments(activityId int) (int, error) {
-	var counter int
-	result := er.DB.Raw("Select COUNT(enrollments.id) FROM enrollments INNER JOIN activities ON enrollments.activity_id = activities.id").
+func (er EnrollmentRepository) CountEnrollmentsAndCapacity(activityId int) (int, int, error) {
+	var counter, capacity int
+	result := er.DB.Raw("SELECT COUNT(*) FROM enrollments WHERE activity_id = ?", activityId).
 		Scan(&counter)
 	if result.Error != nil {
-		return 0, result.Error
+		return 0, 0, result.Error
 	}
-	return counter, nil
+	result = er.DB.Raw("SELECT capacity FROM activities WHERE id = ?", activityId).
+		Scan(&capacity)
+	if result.Error != nil {
+		return 0, 0, result.Error
+	}
+	return counter, capacity, nil
 }
 
-func (er EnrollmentRepository) CreateEnrollment(userId, activityId int) error {
-	isenrolled, err := er.IsEnrolled(userId, activityId)
-	if err != nil {
-		return err
+func (er EnrollmentRepository) CreateEnrollment(userId int, activityId int, date time.Time) error {
+	enrollment := dao.Enrollment{
+		UserId:         userId,
+		ActivityId:     activityId,
+		EnrollmentDate: date,
 	}
-	if isenrolled != false {
-		return errors.New("Ya estas inscripto en esta actividad")
-	}
+	return er.DB.Create(&enrollment).Error
 }
