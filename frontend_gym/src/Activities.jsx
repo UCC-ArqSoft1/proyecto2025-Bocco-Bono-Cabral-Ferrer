@@ -45,6 +45,7 @@ const Activities = () => {
                         </ul>
 
                         <button onClick={() => handleEnrollment(activity.name)}>Inscribirme</button>
+
                     </div>
                 ))}
             </div>
