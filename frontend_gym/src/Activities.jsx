@@ -1,4 +1,5 @@
 import "./Activities.css";
+
 const Activities = () => {
     const activities = [
         {
@@ -20,6 +21,7 @@ const Activities = () => {
     ];
 
     const weekDays = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+    const isloggedin = localStorage.getItem("islogin") === "true";
 
     const handleEnrollment = (activityName) => {
         alert(`Inscribiendo en la actividad: ${activityName}`);
@@ -37,17 +39,17 @@ const Activities = () => {
                         <ul>
                             {activity.schedule.map((schedule, i) => (
                                 <li key={i}>
-                                    Día: <strong>{weekDays[schedule.day]}</strong> -
-                                    Hora de inicio: {schedule["hora-inicio"]} -
-                                    Hora de fin: {schedule["hora-fin"]}
+                                    Día: <strong>{weekDays[schedule.day]}</strong> - Hora de inicio: {schedule["hora-inicio"]} - Hora de fin: {schedule["hora-fin"]}
                                 </li>
                             ))}
                         </ul>
+
                         <button onClick={() => handleEnrollment(activity.name)}>Inscribirme</button>
                     </div>
                 ))}
             </div>
         </div>
-    )
-}
-export default Activities
+    );
+};
+
+export default Activities;
