@@ -39,13 +39,13 @@ const Activities = () => {
                         <ul>
                             {activity.schedule.map((schedule, i) => (
                                 <li key={i}>
-                                    Día: <strong>{weekDays[schedule.day]}</strong> - Hora de inicio: {schedule["hora-inicio"]} - Hora de fin: {schedule["hora-fin"]}
+                                    Día: <strong>{weekDays[schedule.day]}</strong> - Hora de inicio: {schedule["hora-inicio"]} - Hora de finalizacion: {schedule["hora-fin"]}
                                 </li>
                             ))}
                         </ul>
-
-                        <button onClick={() => handleEnrollment(activity.name)}>Inscribirme</button>
-
+                        {isloggedin && (
+                            <button onClick={() => handleEnrollment(activity.name)}>Inscribirme</button>
+                        )}
                     </div>
                 ))}
             </div>
