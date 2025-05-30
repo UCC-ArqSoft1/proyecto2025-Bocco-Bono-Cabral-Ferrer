@@ -16,6 +16,7 @@ type ActivityControllersInterface interface {
 	GetActivities(ctx *gin.Context)
 	GetActivityByID(ctx *gin.Context)
 	CreateActivity(ctx *gin.Context)
+	UpdateActivity(ctx *gin.Context)
 }
 
 func (ac ActivityController) GetActivities(ctx *gin.Context) {
@@ -65,4 +66,52 @@ func (ac ActivityController) CreateActivity(ctx *gin.Context) {
 		return
 	}
 	ctx.IndentedJSON(http.StatusCreated, gin.H{"message": "Activity created successfully"})
+}
+func (ac ActivityController) DeleteActivity(ctx *gin.Context) {
+	// Obtener el id desde el path
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid activity ID"})
+		return
+	}
+
+	// Llamar al servicio para borrar la actividad
+	err = ac.ActivityService.DeleteActivity(id)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Activity deleted successfully"})
+}
+func (ac ActivityController) UpdateActivity(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid activity ID"})
+		return
+	}
+
+	var activityRequest domain.Activity
+	if err := ctx.BindJSON(&activityRequest); err != nil {
+		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	err = ac.ActivityService.UpdateActivity(
+		id,
+		activityRequest.Name,
+		activityRequest.Description,
+		activityRequest.Capacity,
+		activityRequest.Category,
+		activityRequest.Profesor,
+		activityRequest.Schedules,
+	)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.IndentedJSON(http.StatusOK, gin.H{"message": "Activity updated successfully"})
 }

@@ -15,6 +15,8 @@ type ActivityRepositoryInterface interface {
 	GetActivityByID(id int) (dao.Activity, error)
 	GetActivitiesByFilters(keyword string) ([]dao.Activity, error)
 	CreateActivity(name string, description string, capacity int, category string, profesor string, schedules []dao.ActivitySchedule) error
+	DeleteActivity(id int) error
+	UpdateActivity(id int, name string, description string, capacity int, category string, profesor string, schedules []dao.ActivitySchedule) error
 }
 
 func (mySQLDatasource ActivityRepository) GetActivities() ([]dao.Activity, error) {
@@ -81,6 +83,57 @@ func (mySQLDatasource ActivityRepository) CreateActivity(
 		}
 
 		// Paso 3: Insertar schedules
+		if len(schedules) > 0 {
+			if err := tx.Create(&schedules).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+}
+func (mySQLDatasource ActivityRepository) DeleteActivity(id int) error {
+	return mySQLDatasource.DB.Transaction(func(tx *gorm.DB) error {
+		// Borrar los schedules relacionados (por si la FK no está en CASCADE)
+		if err := tx.Where("activity_id = ?", id).Delete(&dao.ActivitySchedule{}).Error; err != nil {
+			return err
+		}
+
+		// Borrar la actividad
+		if err := tx.Delete(&dao.Activity{}, id).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+func (mySQLDatasource ActivityRepository) UpdateActivity(
+	id int, name string, description string, capacity int,
+	category string, profesor string, schedules []dao.ActivitySchedule,
+) error {
+	return mySQLDatasource.DB.Transaction(func(tx *gorm.DB) error {
+		// Actualizar la actividad principal
+		activity := dao.Activity{
+			Id:          id,
+			Name:        name,
+			Description: description,
+			Capacity:    capacity,
+			Category:    category,
+			Profesor:    profesor,
+		}
+		if err := tx.Model(&dao.Activity{}).Where("id = ?", id).Updates(&activity).Error; err != nil {
+			return err
+		}
+
+		//  Borrar los schedules antiguos (para reemplazarlos)
+		if err := tx.Where("activity_id = ?", id).Delete(&dao.ActivitySchedule{}).Error; err != nil {
+			return err
+		}
+
+		// Insertar los schedules nuevos
+		for i := range schedules {
+			schedules[i].ActivityId = id
+		}
 		if len(schedules) > 0 {
 			if err := tx.Create(&schedules).Error; err != nil {
 				return err

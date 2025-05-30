@@ -40,6 +40,8 @@ func main() {
 	router.GET("/activities", activityController.GetActivities)
 	router.GET("/activities/:id", activityController.GetActivityByID)
 	router.POST("/activities", activityController.CreateActivity)
+	router.DELETE("/activities/:id", activityController.DeleteActivity)
+	router.PUT("/activities/:id", activityController.UpdateActivity)
 
 	router.POST("/enrollment", enrollmentController.CreateEnrollment)
 	router.GET("/enrollment", enrollmentController.GetEnrollment)

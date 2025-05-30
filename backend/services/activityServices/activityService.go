@@ -14,6 +14,8 @@ type ActivityServiceInterface interface {
 	GetactivityByID(id int) (domain.Activity, error)
 	GetActivitiesByFilters(keyword string) ([]domain.Activity, error)
 	CreateActivity(name string, description string, capacity int, category string, profesor string, schedules []domain.ActivitySchedule) error
+	DeleteActivity(id int) error
+	UpdateActivity(id int, name string, description string, capacity int, category string, profesor string, schedules []domain.ActivitySchedule) error
 }
 
 func (a ActivityServiceImpl) GetActivities() ([]domain.Activity, error) {
@@ -63,4 +65,23 @@ func (a ActivityServiceImpl) CreateActivity(
 		}
 	}
 	return a.Repo.CreateActivity(name, description, capacity, category, profesor, validSchedules)
+}
+func (a ActivityServiceImpl) DeleteActivity(id int) error {
+	return a.Repo.DeleteActivity(id)
+}
+func (a ActivityServiceImpl) UpdateActivity(
+	id int, name string, description string, capacity int,
+	category string, profesor string, schedules []domain.ActivitySchedule,
+) error {
+	validSchedules := []dao.ActivitySchedule{}
+	for _, s := range schedules {
+		if s.Day != "" && s.StartTime != "" && s.EndTime != "" {
+			validSchedules = append(validSchedules, dao.ActivitySchedule{
+				Day:       s.Day,
+				StartTime: s.StartTime,
+				EndTime:   s.EndTime,
+			})
+		}
+	}
+	return a.Repo.UpdateActivity(id, name, description, capacity, category, profesor, validSchedules)
 }
