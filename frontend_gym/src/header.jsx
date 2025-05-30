@@ -1,4 +1,5 @@
 import Login from "./login";
+import "./Header.css";
 import { useNavigate } from "react-router-dom";
 const Header = () => {
     const navigate = useNavigate();
@@ -14,13 +15,13 @@ const Header = () => {
             <nav>
                 <a href="/">Home</a>
                 {isloggedin ? (<button onClick={logout}>
-                    cerrar sesión
+                    Cerrar Sesión
                 </button>) :
                     (
                         <a href="/login">Login</a>
                     )}
 
-                <a href="/activities">Activities</a>
+                <a href="/activities">Actividades</a>
 
             </nav>
         </header>
