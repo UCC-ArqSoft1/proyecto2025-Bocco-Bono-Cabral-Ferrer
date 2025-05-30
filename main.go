@@ -4,11 +4,12 @@ import (
 	activityClients "gym-api/backend/clients/activityclient"
 	userClients "gym-api/backend/clients/userClients"
 	userControllers "gym-api/backend/controllers/user"
-	
+
+	enrollmentController "gym-api/backend/controllers/enrollment"
 	"gym-api/backend/db"
 	activityServices "gym-api/backend/services/activityServices"
 	userServices "gym-api/backend/services/userServices"
-	enrollmentController "gym-api/backend/controllers/enrollment"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2/log"
 
@@ -38,6 +39,7 @@ func main() {
 
 	router.GET("/activities", activityController.GetActivities)
 	router.GET("/activities/:id", activityController.GetActivityByID)
+	router.POST("/activities", activityController.CreateActivity)
 
 	router.POST("/enrollment", enrollmentController.CreateEnrollment)
 	router.GET("/enrollment", enrollmentController.GetEnrollment)

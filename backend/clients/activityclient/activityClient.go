@@ -14,6 +14,7 @@ type ActivityRepositoryInterface interface {
 	GetActivities() ([]dao.Activity, error)
 	GetActivityByID(id int) (dao.Activity, error)
 	GetActivitiesByFilters(keyword string) ([]dao.Activity, error)
+	CreateActivity(name string, description string, capacity int, category string, profesor string, schedules []dao.ActivitySchedule) error
 }
 
 func (mySQLDatasource ActivityRepository) GetActivities() ([]dao.Activity, error) {
@@ -55,4 +56,37 @@ func (mySQLDatasource ActivityRepository) GetActivitiesByFilters(keyword string)
 		return nil, result.Error
 	}
 	return activities, nil
+}
+func (mySQLDatasource ActivityRepository) CreateActivity(
+	name string, description string, capacity int,
+	category string, profesor string, schedules []dao.ActivitySchedule,
+) error {
+	return mySQLDatasource.DB.Transaction(func(tx *gorm.DB) error {
+		activity := dao.Activity{
+			Name:        name,
+			Description: description,
+			Capacity:    capacity,
+			Category:    category,
+			Profesor:    profesor,
+		}
+
+		// 🚀 Solo este Create, con .Omit("Schedules.*")
+		if err := tx.Omit("Schedules.*").Create(&activity).Error; err != nil {
+			return err
+		}
+
+		// Paso 2: Asignar activity_id a cada schedule
+		for i := range schedules {
+			schedules[i].ActivityId = activity.Id
+		}
+
+		// Paso 3: Insertar schedules
+		if len(schedules) > 0 {
+			if err := tx.Create(&schedules).Error; err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
 }
