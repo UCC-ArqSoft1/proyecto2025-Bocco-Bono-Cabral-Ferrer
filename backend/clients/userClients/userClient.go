@@ -1,6 +1,7 @@
 package clients
 
 import (
+	"errors"
 	"fmt"
 	"gym-api/backend/dao"
 
@@ -21,6 +22,7 @@ type UserRepositoryInterface interface {
 		password string,
 		birthDate string,
 		sex string) (dao.User, error)
+	EmailAlreadyExists(email string) error
 }
 
 func (mySQLDatasource UserRepository) GetUserByEmail(email string) (dao.User, error) {
@@ -31,6 +33,15 @@ func (mySQLDatasource UserRepository) GetUserByEmail(email string) (dao.User, er
 	}
 	return user, nil
 }
+func (mySQLDatasource UserRepository) EmailAlreadyExists(email string) error {
+	var user dao.User
+	result := mySQLDatasource.DB.First(&user, "email = ?", email)
+	if result.Error != nil {
+		return nil
+	}
+	return errors.New("El email que ingresaste ya esta en uso")
+}
+
 func (mySQLDatasource UserRepository) GetUserByID(id int) (dao.User, error) {
 	var user dao.User
 	result := mySQLDatasource.DB.First(&user, id)

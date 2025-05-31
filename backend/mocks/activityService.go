@@ -36,3 +36,14 @@ func (m MockActivityService) GetActivitiesByFilters(keyword string) ([]domain.Ac
 		{Name: "Filtrado", Description: "Con keyword"},
 	}, nil
 }
+func (m MockActivityService) CreateActivity(name string, description string, capacity int, category string, profesor string, schedules []domain.ActivitySchedule) error {
+	return nil
+}
+
+func (m MockActivityService) UpdateActivity(id int, name string, description string, capacity int, category string, profesor string, schedules []domain.ActivitySchedule) error {
+	return nil
+}
+
+func (m MockActivityService) DeleteActivity(id int) error {
+	return nil
+}

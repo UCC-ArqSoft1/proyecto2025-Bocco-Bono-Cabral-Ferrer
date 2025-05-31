@@ -34,11 +34,11 @@ func (services UserService) Login(email string, password string) (int, string, i
 var ErrEmailAlreadyExists = errors.New("email already in use")
 
 func (services UserService) Register(name string, lastName string, email string, password string, birth_date string, sex string) (int, int, error) {
-	userDAO, err := services.Repo.GetUserByEmail(email)
-	if userDAO.Id != 0 {
+	err := services.Repo.EmailAlreadyExists(email)
+	if err != nil {
 		return 0, 0, ErrEmailAlreadyExists
 	}
 	hashedPassword := utils.HashPassword(password)
-	services.Repo.InsertUser(name, lastName, email, hashedPassword, birth_date, sex)
-	return userDAO.Id, userDAO.UserTypeId, err
+	user, err := services.Repo.InsertUser(name, lastName, email, hashedPassword, birth_date, sex)
+	return user.Id, user.UserTypeId, err
 }

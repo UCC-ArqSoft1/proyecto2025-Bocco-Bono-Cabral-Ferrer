@@ -11,16 +11,17 @@ type Activity struct {
 	Capacity    int                `gorm:"not null"`
 	Category    string             `gorm:"type:varchar(350);not null"`
 	Profesor    string             `gorm:"type:varchar(350);not null"`
-	Schedules   []ActivitySchedule `gorm:"foreignKey:ActivityId"`
+	Schedules   []ActivitySchedule `gorm:"foreignKey:ActivityId;"`
 }
 
 type ActivitySchedule struct {
 	Id         int    `gorm:"primaryKey"`
 	ActivityId int    `gorm:"not null"`
-	Day        string `gorm:"type:varchar(10);not null"`
-	StartTime  string `gorm:"type:varchar(5);not null"`
-	EndTime    string `gorm:"type:varchar(5);not null"`
+	Day        string `gorm:"type:varchar(10);not null;default:''"`
+	StartTime  string `gorm:"type:varchar(5);not null;default:''"`
+	EndTime    string `gorm:"type:varchar(5);not null;default:''"`
 }
+
 type Activities []Activity
 
 func DaoToDto(activity Activity) domain.Activity {
