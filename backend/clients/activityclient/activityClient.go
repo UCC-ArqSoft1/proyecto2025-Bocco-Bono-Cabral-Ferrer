@@ -29,13 +29,13 @@ func (mySQLDatasource ActivityRepository) GetActivities() ([]dao.Activity, error
 }
 
 func (mySQLDatasource ActivityRepository) GetActivityByID(id int) (dao.Activity, error) {
-	var activity dao.Activity
+	var activities dao.Activity
 
-	result := mySQLDatasource.DB.First(&activity, id)
+	result := mySQLDatasource.DB.Preload("Schedules").First(&activities, id)
 	if result.Error != nil {
 		return dao.Activity{}, result.Error
 	}
-	return activity, nil
+	return activities, nil
 }
 
 func (mySQLDatasource ActivityRepository) GetActivitiesByFilters(keyword string) ([]dao.Activity, error) {
@@ -43,15 +43,16 @@ func (mySQLDatasource ActivityRepository) GetActivitiesByFilters(keyword string)
 	Keyword := "%" + keyword + "%"
 	result := mySQLDatasource.DB.
 		Joins("JOIN activity_schedules ON activity_schedules.activity_id = activities.id").
-		Where(`
-		activities.name LIKE ? OR 
-		activities.description LIKE ? OR 
-		activities.category LIKE ? OR 
-		activities.profesor LIKE ? OR
-		activity_schedules.day LIKE ? OR 
-		activity_schedules.start_time LIKE ?
-	`, Keyword, Keyword, Keyword, Keyword, Keyword, Keyword).
 		Preload("Schedules").
+		Distinct("activities.*").
+		Where(`
+			activities.name LIKE ? OR 
+			activities.description LIKE ? OR 
+			activities.category LIKE ? OR 
+			activities.profesor LIKE ? OR
+			activity_schedules.day LIKE ? OR 
+			activity_schedules.start_time LIKE ?
+		`, Keyword, Keyword, Keyword, Keyword, Keyword, Keyword).
 		Find(&activities)
 
 	if result.Error != nil {

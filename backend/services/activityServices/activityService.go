@@ -67,12 +67,19 @@ func (a ActivityServiceImpl) CreateActivity(
 	return a.Repo.CreateActivity(name, description, capacity, category, profesor, validSchedules)
 }
 func (a ActivityServiceImpl) DeleteActivity(id int) error {
-	return a.Repo.DeleteActivity(id)
+	daoActivity, err := a.Repo.GetActivityByID(id)
+	if err != nil {
+		return err
+	}
+	return a.Repo.DeleteActivity(daoActivity.Id)
 }
 func (a ActivityServiceImpl) UpdateActivity(
 	id int, name string, description string, capacity int,
-	category string, profesor string, schedules []domain.ActivitySchedule,
-) error {
+	category string, profesor string, schedules []domain.ActivitySchedule) error {
+	_, err := a.Repo.GetActivityByID(id)
+	if err != nil {
+		return err
+	}
 	validSchedules := []dao.ActivitySchedule{}
 	for _, s := range schedules {
 		if s.Day != "" && s.StartTime != "" && s.EndTime != "" {

@@ -11,7 +11,7 @@ type Activity struct {
 	Capacity    int                `gorm:"not null"`
 	Category    string             `gorm:"type:varchar(350);not null"`
 	Profesor    string             `gorm:"type:varchar(350);not null"`
-	Schedules   []ActivitySchedule `gorm:"foreignKey:ActivityId;-:all"`
+	Schedules   []ActivitySchedule `gorm:"foreignKey:ActivityId;"`
 }
 
 type ActivitySchedule struct {
