@@ -2,6 +2,8 @@ package controllers
 
 import (
 	services "gym-api/backend/services/enrollmentService"
+	"gym-api/backend/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,8 +16,37 @@ type EnrollmentControllersInterface interface {
 	GetEnrollment(ctx *gin.Context)
 }
 
-func CreateEnrollment(ctx *gin.Context) {
+func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		// Handle error - no claims found
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	// Type assert to get your CustomClaims
+	customClaims, ok := claims.(*utils.CustomClaims)
+	if !ok {
+		// Handle error - invalid claims type
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+		return
+	}
+	// Now you can use the user ID
+	userID := customClaims.UserID
+	type EnrollmentRequest struct {
+		ActivityId int `json:"activity_id"`
+	}
+	var request EnrollmentRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
+	err := ec.EnrollmentService.CreateEnrollment(userID, request.ActivityId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "enrollment created successfully"})
 }
 
 func GetEnrollment(ctx *gin.Context) {
