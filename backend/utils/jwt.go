@@ -12,18 +12,33 @@ const (
 	jwtSecret   = "jwtSecret"
 )
 
-func GenerateJWT(userID int) (string, error) {
+// CustomClaims extends the standard JWT claims with our custom fields
+type CustomClaims struct {
+	UserID     int `json:"user_id"`
+	UserTypeID int `json:"user_type_id"`
+	jwt.RegisteredClaims
+}
+
+// GetJWTSecret returns the JWT secret key
+func GetJWTSecret() string {
+	return jwtSecret
+}
+
+func GenerateJWT(userID int, userTypeID int) (string, error) {
 	// Setear expiracion
 	expirationTime := time.Now().Add(jwtDuration)
 
 	// Construir los claims
-	claims := jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(expirationTime),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		NotBefore: jwt.NewNumericDate(time.Now()),
-		Issuer:    "backend",
-		Subject:   "auth",
-		ID:        fmt.Sprintf("%d", userID),
+	claims := CustomClaims{
+		UserID:     userID,
+		UserTypeID: userTypeID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "backend",
+			Subject:   "auth",
+		},
 	}
 
 	// Crear el token

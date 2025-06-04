@@ -14,8 +14,8 @@ type EnrollmentRepository struct {
 
 type EnrollmentRepositoryInterface interface {
 	IsEnrolled(userId, activityId int) (bool, error)
-	CountEnrollments(activityId int) (int, int, error)
-	CreateEnrollment(userId, activityId int) error
+	CountEnrollmentsAndCapacity(activityId int) (int, int, error)
+	CreateEnrollment(userId int, activityId int, date time.Time) error
 }
 
 func (er EnrollmentRepository) IsEnrolled(userId, activityId int) (bool, error) {

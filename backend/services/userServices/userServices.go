@@ -24,7 +24,7 @@ func (services UserService) Login(email string, password string) (int, string, i
 	if utils.HashPassword(password) != daoUser.PasswordHash {
 		return 0, "", 0, fmt.Errorf("invalid password")
 	}
-	token, err := utils.GenerateJWT(daoUser.Id)
+	token, err := utils.GenerateJWT(daoUser.Id, daoUser.UserTypeId)
 	if err != nil {
 		return 0, "", 0, fmt.Errorf("error generating token: %w", err)
 	}

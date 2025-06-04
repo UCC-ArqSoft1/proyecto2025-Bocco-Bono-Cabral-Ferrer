@@ -3,19 +3,47 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
-    const [username, setUsername] = useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        if (username === "admin" && password === "admin") {
-            console.log("Login successful");
-            localStorage.setItem("islogin", "true");
-            navigate("/activities");
+        setError("");
+        setIsLoading(true);
 
-        } else {
-            console.log("Login failed");
+        try {
+            const response = await fetch('http://localhost:8080/users/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email,
+                    password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al iniciar sesión');
+            }
+
+            // Store the token and user info
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("userId", data.user_id);
+            localStorage.setItem("userTypeId", data.user_type_id);
+            localStorage.setItem("isLogin", "true");
+
+            // Redirect based on user type
+            navigate("/activities");
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -23,11 +51,12 @@ const Login = () => {
         <div className="login-container">
             <form className="login-form" onSubmit={handleLogin}>
                 <h2>Iniciar sesión</h2>
+                {error && <div className="error-message">{error}</div>}
                 <input
-                    type="text"
-                    placeholder="Usuario"
-                    onChange={(e) => setUsername(e.target.value)}
-                    value={username}
+                    type="email"
+                    placeholder="Email"
+                    onChange={(e) => setEmail(e.target.value)}
+                    value={email}
                     required
                 />
                 <input
@@ -37,7 +66,9 @@ const Login = () => {
                     value={password}
                     required
                 />
-                <button type="submit">Iniciar sesión</button>
+                <button type="submit" disabled={isLoading}>
+                    {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
+                </button>
             </form>
         </div>
     );

@@ -45,7 +45,7 @@ func TestGetActivititesByFilters(t *testing.T) {
 	controller := controllers.ActivityController{ActivityService: mockService}
 
 	// Simular request con keyword
-	req, _ := http.NewRequest(http.MethodGet, "/activities?keyword=Filtrado", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/activities?keyword=Yoga", nil)
 	resp := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(resp)
 	ctx.Request = req
@@ -70,7 +70,10 @@ func TestCreateActivity(t *testing.T) {
 		"category": "Bienestar",
 		"profesor": "María",
 		"schedules": [
-			{"day": "Lunes", "start_time": "08:00", "end_time": "09:00"}
+			{"day": "Lunes",
+			 "start_time": "08:00",
+			  "end_time": "09:00"
+			}
 		]
 	}`
 
