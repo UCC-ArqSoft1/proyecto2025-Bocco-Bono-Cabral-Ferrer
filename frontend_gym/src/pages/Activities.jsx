@@ -1,4 +1,4 @@
-import "./Activities.css";
+import "../Styles/Activities.css";
 
 const Activities = () => {
     const activities = [

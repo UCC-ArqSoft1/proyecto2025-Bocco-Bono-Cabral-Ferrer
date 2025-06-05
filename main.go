@@ -28,7 +28,7 @@ func main() {
 
 	// Configure CORS
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:5173"} // Add your frontend URL
+	config.AllowOrigins = []string{"http://localhost:5178"} // Add your frontend URL
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
 	config.AllowCredentials = true
