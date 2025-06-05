@@ -1,5 +1,5 @@
-import Login from "./login";
-import "./Header.css";
+import Login from "../pages/login.jsx";
+import "../Styles/header.css";
 import { useNavigate } from "react-router-dom";
 const Header = () => {
     const navigate = useNavigate();
