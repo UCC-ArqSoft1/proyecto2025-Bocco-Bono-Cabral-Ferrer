@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import '../Styles/index.css';
 import Login from '../pages/login.jsx';
+import Register from '../pages/register.jsx';
 import Layout from '../components/Layout.jsx';
 import Home from '../pages/home.jsx';
 import Activities from '../pages/Activities.jsx';
@@ -14,8 +15,9 @@ createRoot(document.getElementById('root')).render(
       <Routes>
         <Route path='/' element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="/Login" element={<Login />} />
-          <Route path='/Activities' element={<Activities />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path='/activities' element={<Activities />} />
           <Route path='/admin/activities' element={<ActivitiesAdmin />} />
         </Route>
       </Routes>

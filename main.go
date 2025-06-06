@@ -28,7 +28,7 @@ func main() {
 
 	// Configure CORS
 	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:5174"} // Add your frontend URL
+	config.AllowOrigins = []string{"http://localhost:5173"} // Add your frontend URL
 	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}
 	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization"}
 	config.AllowCredentials = true
@@ -52,6 +52,8 @@ func main() {
 
 	router.POST("/users/login", userController.Login)
 	router.POST("/users/register", userController.Register)
+	router.GET("/activities/search", activityController.GetActivitiesByFilters)
+	router.GET("/activities/:id", activityController.GetActivityByID)
 	router.GET("/activities", activityController.GetActivities)
 	authorized := router.Group("/")
 
@@ -59,7 +61,7 @@ func main() {
 
 	authorized.POST("/enrollment", enrollmentController.CreateEnrollment)
 	//authorized.GET("/activities", activityController.GetActivities)
-	authorized.GET("/activities/:id", activityController.GetActivityByID)
+	//authorized.GET("/activities/:id", activityController.GetActivityByID)
 	authorized.POST("/activities", activityController.CreateActivity)
 	authorized.DELETE("/activities/:id", activityController.DeleteActivity)
 	authorized.PUT("/activities/:id", activityController.UpdateActivity)

@@ -7,6 +7,7 @@ type Activity struct {
 	Capacity    int                `json:"capacity"`
 	Category    string             `json:"category"`
 	Profesor    string             `json:"profesor"`
+	ImageUrl    string             `json:"image_url"`
 	Schedules   []ActivitySchedule `json:"schedules"`
 }
 

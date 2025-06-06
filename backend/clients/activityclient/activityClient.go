@@ -14,9 +14,9 @@ type ActivityRepositoryInterface interface {
 	GetActivities() ([]dao.Activity, error)
 	GetActivityByID(id int) (dao.Activity, error)
 	GetActivitiesByFilters(keyword string) ([]dao.Activity, error)
-	CreateActivity(name string, description string, capacity int, category string, profesor string, schedules []dao.ActivitySchedule) error
+	CreateActivity(name string, description string, capacity int, category string, profesor string, imageurl string, schedules []dao.ActivitySchedule) error
 	DeleteActivity(id int) error
-	UpdateActivity(id int, name string, description string, capacity int, category string, profesor string, schedules []dao.ActivitySchedule) error
+	UpdateActivity(id int, name string, description string, capacity int, category string, profesor string, imageurl string, schedules []dao.ActivitySchedule) error
 }
 
 func (mySQLDatasource ActivityRepository) GetActivities() ([]dao.Activity, error) {
@@ -62,7 +62,7 @@ func (mySQLDatasource ActivityRepository) GetActivitiesByFilters(keyword string)
 }
 func (mySQLDatasource ActivityRepository) CreateActivity(
 	name string, description string, capacity int,
-	category string, profesor string, schedules []dao.ActivitySchedule,
+	category string, profesor string, imageurl string, schedules []dao.ActivitySchedule,
 ) error {
 	return mySQLDatasource.DB.Transaction(func(tx *gorm.DB) error {
 		activity := dao.Activity{
@@ -71,6 +71,7 @@ func (mySQLDatasource ActivityRepository) CreateActivity(
 			Capacity:    capacity,
 			Category:    category,
 			Profesor:    profesor,
+			ImageUrl:    imageurl,
 		}
 
 		// 🚀 Solo este Create, con .Omit("Schedules.*")
@@ -110,7 +111,7 @@ func (mySQLDatasource ActivityRepository) DeleteActivity(id int) error {
 }
 func (mySQLDatasource ActivityRepository) UpdateActivity(
 	id int, name string, description string, capacity int,
-	category string, profesor string, schedules []dao.ActivitySchedule,
+	category string, profesor string, imageurl string, schedules []dao.ActivitySchedule,
 ) error {
 	return mySQLDatasource.DB.Transaction(func(tx *gorm.DB) error {
 		// Actualizar la actividad principal
@@ -121,6 +122,7 @@ func (mySQLDatasource ActivityRepository) UpdateActivity(
 			Capacity:    capacity,
 			Category:    category,
 			Profesor:    profesor,
+			ImageUrl:    imageurl,
 		}
 		if err := tx.Model(&dao.Activity{}).Where("id = ?", id).Updates(&activity).Error; err != nil {
 			return err
