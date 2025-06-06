@@ -16,6 +16,7 @@ type EnrollmentRepositoryInterface interface {
 	IsEnrolled(userId, activityId int) (bool, error)
 	CountEnrollmentsAndCapacity(activityId int) (int, int, error)
 	CreateEnrollment(userId int, activityId int, date time.Time) error
+	GetUserEnrollments(userId int) ([]dao.Enrollment, error)
 }
 
 func (er EnrollmentRepository) IsEnrolled(userId, activityId int) (bool, error) {
@@ -61,4 +62,17 @@ func (er EnrollmentRepository) CreateEnrollment(userId int, activityId int, date
 		return err.Error
 	}
 	return nil
+}
+
+func (er EnrollmentRepository) GetUserEnrollments(userId int) ([]dao.Enrollment, error) {
+	var enrollments []dao.Enrollment
+	result := er.DB.
+		Preload("Activity.Schedules").
+		Where("user_id = ?", userId).
+		Find(&enrollments)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return enrollments, nil
 }

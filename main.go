@@ -63,7 +63,7 @@ func main() {
 	authorized.POST("/activities", activityController.CreateActivity)
 	authorized.DELETE("/activities/:id", activityController.DeleteActivity)
 	authorized.PUT("/activities/:id", activityController.UpdateActivity)
-	//router.GET("/enrollment", enrollmentController.GetEnrollment)
+	authorized.GET("/enrollments", enrollmentController.GetEnrollment)
 
 	log.Info("Starting server")
 	router.Run(":8080")
