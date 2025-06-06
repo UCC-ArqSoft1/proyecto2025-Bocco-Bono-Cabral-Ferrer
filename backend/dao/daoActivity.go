@@ -11,6 +11,7 @@ type Activity struct {
 	Capacity    int                `gorm:"not null"`
 	Category    string             `gorm:"type:varchar(350);not null"`
 	Profesor    string             `gorm:"type:varchar(350);not null"`
+	ImageUrl    string             `gorm:"type:varchar(350);not null"`
 	Schedules   []ActivitySchedule `gorm:"foreignKey:ActivityId;"`
 }
 
@@ -32,6 +33,7 @@ func DaoToDto(activity Activity) domain.Activity {
 		Capacity:    activity.Capacity,
 		Category:    activity.Category,
 		Profesor:    activity.Profesor,
+		ImageUrl:    activity.ImageUrl,
 		Schedules:   ConvertActivitySchedules(activity.Schedules),
 	}
 

@@ -1,0 +1,1 @@
+insert into users values(2,"Hulk","Hogan", "user@user.com","04f8996da763b7a969b1028ee3007569eaf3a635486ddab211d512c85b9df8fb","19/19/1919","minita",2);

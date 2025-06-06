@@ -17,6 +17,7 @@ const Admn = () => {
     const [capacity, setCapacity] = useState(0);
     const [category, setCategory] = useState("");
     const [profesor, setProfesor] = useState("");
+    const [imageUrl, setImageUrl] = useState("");
 
     // Estado para horarios
     const [schedules, setSchedules] = useState([
@@ -62,6 +63,7 @@ const Admn = () => {
         setCapacity(0);
         setCategory("");
         setProfesor("");
+        setImageUrl("");
         setSchedules([{ day: "Lunes", start_time: "08:00", end_time: "09:00" }]);
     };
 
@@ -108,6 +110,7 @@ const Admn = () => {
             capacity: parseInt(capacity, 10),
             category: category.trim(),
             profesor: profesor.trim(),
+            image_url: imageUrl.trim(),
             schedules: schedules
         };
 
@@ -180,6 +183,7 @@ const Admn = () => {
         setCapacity(activity.capacity);
         setCategory(activity.category);
         setProfesor(activity.profesor);
+        setImageUrl(activity.image_url || "");
         setSchedules(activity.schedules);
     };
 
@@ -192,7 +196,7 @@ const Admn = () => {
 
             {/* ===========================================================
             FORMULARIO DE CREACIÓN / EDICIÓN (id="admin-form")
-         =========================================================== */}
+            =========================================================== */}
             <div id="admin-form" className="admin-form-card">
                 <h2>{isEditing ? "Editar Actividad" : "Crear Nueva Actividad"}</h2>
                 <form onSubmit={handleSubmit}>
@@ -249,6 +253,17 @@ const Admn = () => {
                             value={profesor}
                             onChange={(e) => setProfesor(e.target.value)}
                             placeholder="Ej. Carlos Gómez"
+                        />
+                    </label>
+
+                    {/* 6) URL de Imagen */}
+                    <label>
+                        URL de Imagen:
+                        <input
+                            type="text"
+                            value={imageUrl}
+                            onChange={(e) => setImageUrl(e.target.value)}
+                            placeholder="Ej. /images/nombreimagen.extension"
                         />
                     </label>
 
@@ -310,7 +325,7 @@ const Admn = () => {
 
             {/* ===========================================================
             LISTADO DE ACTIVIDADES EXISTENTES
-         =========================================================== */}
+            =========================================================== */}
             <div className="activities-list-admin">
                 {activities.length === 0 && <p>No hay actividades para mostrar.</p>}
 
@@ -328,6 +343,13 @@ const Admn = () => {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Imagen de la actividad */}
+                        {activity.image_url && (
+                            <div className="activity-image">
+                                <img src={activity.image_url} alt={activity.name} />
+                            </div>
+                        )}
 
                         {/* Detalles adicionales */}
                         <p className="activity-desc">{activity.description}</p>

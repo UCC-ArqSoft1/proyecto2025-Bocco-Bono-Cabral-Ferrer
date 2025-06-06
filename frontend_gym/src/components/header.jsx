@@ -21,12 +21,13 @@ const Header = () => {
                 <a href="/">Home</a>
                 {isloggedin ? (
                     <>
-                        <a href="/activities">Mis Actividades</a>
+                        <a href="/activities">Actividades</a>
                         <button onClick={logout}>Cerrar Sesión</button>
                     </>
                 ) : (
                     <>
                         <a href="/login">Login</a>
+                        <a href="/register">Registro</a>
                         <a href="/activities">Ver Actividades</a>
                     </>
                 )}

@@ -14,13 +14,14 @@ type ActivityController struct {
 }
 type ActivityControllersInterface interface {
 	GetActivities(ctx *gin.Context)
+	GetActivitiesByFilters(ctx *gin.Context)
 	GetActivityByID(ctx *gin.Context)
 	CreateActivity(ctx *gin.Context)
 	UpdateActivity(ctx *gin.Context)
 }
 
 func (ac ActivityController) GetActivities(ctx *gin.Context) {
-	if keyword, ok := ctx.GetQuery("keyword"); !ok {
+	if _, ok := ctx.GetQuery("keyword"); !ok {
 		dtoActivities, err := ac.ActivityService.GetActivities()
 		if err != nil {
 			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -28,15 +29,16 @@ func (ac ActivityController) GetActivities(ctx *gin.Context) {
 		}
 		ctx.IndentedJSON(http.StatusOK, dtoActivities)
 		return
-	} else {
-		dtoActivities, err := ac.ActivityService.GetActivitiesByFilters(keyword)
-		if err != nil {
-			ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-		ctx.IndentedJSON(http.StatusOK, dtoActivities)
 	}
-
+}
+func (ac ActivityController) GetActivitiesByFilters(ctx *gin.Context) {
+	keyword := ctx.Query("keyword")
+	dtoActivities, err := ac.ActivityService.GetActivitiesByFilters(keyword)
+	if err != nil {
+		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.IndentedJSON(http.StatusOK, dtoActivities)
 }
 func (ac ActivityController) GetActivityByID(ctx *gin.Context) {
 	id := ctx.Param("id")
@@ -60,7 +62,13 @@ func (ac ActivityController) CreateActivity(ctx *gin.Context) {
 			validSchedules = append(validSchedules, s)
 		}
 	}
-	err := ac.ActivityService.CreateActivity(activityRequest.Name, activityRequest.Description, activityRequest.Capacity, activityRequest.Category, activityRequest.Profesor, validSchedules)
+	err := ac.ActivityService.CreateActivity(activityRequest.Name,
+		activityRequest.Description,
+		activityRequest.Capacity,
+		activityRequest.Category,
+		activityRequest.Profesor,
+		activityRequest.ImageUrl,
+		validSchedules)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -106,6 +114,7 @@ func (ac ActivityController) UpdateActivity(ctx *gin.Context) {
 		activityRequest.Capacity,
 		activityRequest.Category,
 		activityRequest.Profesor,
+		activityRequest.ImageUrl,
 		activityRequest.Schedules,
 	)
 	if err != nil {

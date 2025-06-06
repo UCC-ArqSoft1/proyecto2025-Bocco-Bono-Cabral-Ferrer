@@ -1,7 +1,15 @@
 import "../Styles/home.css";
 import { FaDumbbell, FaUserFriends, FaClock, FaHeart } from 'react-icons/fa';
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
+    const navigate = useNavigate();
+    const isLoggedIn = localStorage.getItem("isLogin") === "true";
+
+    const handleJoinNow = () => {
+        navigate("/register");
+    };
+
     return (
         <div className="home-page">
             {/* Sección Hero */}
@@ -9,7 +17,9 @@ const Home = () => {
                 <div className="hero-content">
                     <h1>Transforma Tu Vida</h1>
                     <p>Comienza tu viaje fitness hoy con el mejor equipo y entrenadores</p>
-                    <button className="cta-button">¡Únete Ahora!</button>
+                    {!isLoggedIn && (
+                        <button className="cta-button" onClick={handleJoinNow}>¡Únete Ahora!</button>
+                    )}
                 </div>
             </section>
 
@@ -55,7 +65,7 @@ const Home = () => {
                                 <li>Equipamiento básico</li>
                                 <li>Acceso a vestuarios</li>
                             </ul>
-                            <button className="plan-button">Seleccionar Plan</button>
+                            <button className="plan-button" onClick={handleJoinNow}>Seleccionar Plan</button>
                         </div>
                         <div className="plan-card featured">
                             <h3>Premium</h3>
@@ -66,7 +76,7 @@ const Home = () => {
                                 <li>Sesión con entrenador personal</li>
                                 <li>Acceso al spa</li>
                             </ul>
-                            <button className="plan-button">Seleccionar Plan</button>
+                            <button className="plan-button" onClick={handleJoinNow}>Seleccionar Plan</button>
                         </div>
                         <div className="plan-card">
                             <h3>Elite</h3>
@@ -77,7 +87,7 @@ const Home = () => {
                                 <li>4 sesiones PT/mes</li>
                                 <li>Consulta nutricional</li>
                             </ul>
-                            <button className="plan-button">Seleccionar Plan</button>
+                            <button className="plan-button" onClick={handleJoinNow}>Seleccionar Plan</button>
                         </div>
                     </div>
                 </div>
@@ -109,7 +119,9 @@ const Home = () => {
                 <div className="content-wrapper">
                     <h2>¿Listo para Comenzar tu Viaje Fitness?</h2>
                     <p>¡Únete ahora y obtén tu primer mes al 50% de descuento!</p>
-                    <button className="cta-button">¡Comienza Hoy!</button>
+                    {!isLoggedIn && (
+                        <button className="cta-button" onClick={handleJoinNow}>¡Comienza Hoy!</button>
+                    )}
                 </div>
             </section>
         </div>

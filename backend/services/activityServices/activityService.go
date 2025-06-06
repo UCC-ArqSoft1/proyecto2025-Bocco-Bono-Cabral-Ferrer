@@ -13,9 +13,9 @@ type ActivityServiceInterface interface {
 	GetActivities() ([]domain.Activity, error)
 	GetactivityByID(id int) (domain.Activity, error)
 	GetActivitiesByFilters(keyword string) ([]domain.Activity, error)
-	CreateActivity(name string, description string, capacity int, category string, profesor string, schedules []domain.ActivitySchedule) error
+	CreateActivity(name string, description string, capacity int, category string, profesor string, imageurl string, schedules []domain.ActivitySchedule) error
 	DeleteActivity(id int) error
-	UpdateActivity(id int, name string, description string, capacity int, category string, profesor string, schedules []domain.ActivitySchedule) error
+	UpdateActivity(id int, name string, description string, capacity int, category string, profesor string, imageurl string, schedules []domain.ActivitySchedule) error
 }
 
 func (a ActivityServiceImpl) GetActivities() ([]domain.Activity, error) {
@@ -52,7 +52,7 @@ func (a ActivityServiceImpl) GetActivitiesByFilters(keyword string) ([]domain.Ac
 
 func (a ActivityServiceImpl) CreateActivity(
 	name string, description string, capacity int,
-	category string, profesor string, schedules []domain.ActivitySchedule,
+	category string, profesor string, imageurl string, schedules []domain.ActivitySchedule,
 ) error {
 	validSchedules := []dao.ActivitySchedule{}
 	for _, s := range schedules {
@@ -64,7 +64,7 @@ func (a ActivityServiceImpl) CreateActivity(
 			})
 		}
 	}
-	return a.Repo.CreateActivity(name, description, capacity, category, profesor, validSchedules)
+	return a.Repo.CreateActivity(name, description, capacity, category, profesor, imageurl, validSchedules)
 }
 func (a ActivityServiceImpl) DeleteActivity(id int) error {
 	daoActivity, err := a.Repo.GetActivityByID(id)
@@ -75,7 +75,7 @@ func (a ActivityServiceImpl) DeleteActivity(id int) error {
 }
 func (a ActivityServiceImpl) UpdateActivity(
 	id int, name string, description string, capacity int,
-	category string, profesor string, schedules []domain.ActivitySchedule) error {
+	category string, profesor string, imageurl string, schedules []domain.ActivitySchedule) error {
 	_, err := a.Repo.GetActivityByID(id)
 	if err != nil {
 		return err
@@ -90,5 +90,5 @@ func (a ActivityServiceImpl) UpdateActivity(
 			})
 		}
 	}
-	return a.Repo.UpdateActivity(id, name, description, capacity, category, profesor, validSchedules)
+	return a.Repo.UpdateActivity(id, name, description, capacity, category, profesor, imageurl, validSchedules)
 }

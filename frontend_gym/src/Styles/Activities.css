@@ -4,9 +4,10 @@
     justify-content: center;
     align-items: center;
     width: 100vw;
-    height: 100vh;
+    min-height: 100vh;
     gap: 1rem;
     background-color: white;
+    padding: 2rem;
 }
 
 .activitiescontainer h1 {
@@ -35,10 +36,11 @@
     gap: 2rem;
     width: 100%;
     max-width: 1200px;
+    padding: 0 1rem;
 }
 
 .activity-card {
-    background-color: #b1c5cb;
+    background-color: #ffffff;
     border-radius: 16px;
     padding: 1.8rem;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -46,11 +48,26 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    border: 1px solid #e0e0e0;
 }
 
 .activity-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 35px 35px rgba(0, 0, 0, 0.22);
+}
+
+.activity-image {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.activity-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .activity-card h2 {
@@ -82,6 +99,12 @@
     margin-bottom: 0.4rem;
 }
 
+.admin-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
 button {
     align-self: start;
     background-color: #007bff;
@@ -97,4 +120,237 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+.delete-button {
+    background-color: #dc3545;
+}
+
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.create-button {
+    margin-top: 2rem;
+    background-color: #28a745;
+    padding: 0.8rem 2rem;
+}
+
+.create-button:hover {
+    background-color: #218838;
+}
+
+.activities-page {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.activities-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.activities-header h1 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 2rem;
+}
+
+.search-container {
+    flex: 0 1 400px;
+}
+
+.search-form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.search-input {
+    flex: 1;
+    padding: 0.8rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 5px rgba(51, 143, 204, 0.3);
+}
+
+.search-button {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.search-button:hover {
+    background-color: var(--accent-color);
+}
+
+.search-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.error-message {
+    color: #c62828;
+    background-color: #ffebee;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.activities-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.activity-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.activity-card:hover {
+    transform: translateY(-5px);
+}
+
+.activity-image {
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+}
+
+.activity-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.activity-content {
+    padding: 1.5rem;
+}
+
+.activity-content h3 {
+    margin: 0 0 1rem;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+}
+
+.activity-content p {
+    margin: 0 0 1rem;
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.schedule {
+    margin: 1rem 0;
+}
+
+.schedule h4 {
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.schedule p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: var(--text-color);
+}
+
+.enroll-button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.enroll-button:hover {
+    background-color: var(--accent-color);
+}
+
+.admin-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.admin-buttons button {
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.admin-buttons button:first-child {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.admin-buttons .delete-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.create-button {
+    display: block;
+    margin: 2rem auto 0;
+    padding: 1rem 2rem;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-button:hover {
+    background-color: var(--accent-color);
+}
+
+@media (max-width: 768px) {
+    .activities-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-container {
+        width: 100%;
+    }
+
+    .activities-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-buttons {
+        flex-direction: column;
+    }
 }
