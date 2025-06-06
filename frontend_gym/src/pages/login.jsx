@@ -7,6 +7,7 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    localStorage.setItem("isLogin", "false");
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
