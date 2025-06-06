@@ -31,7 +31,7 @@ nav a:hover {
 }
 
 nav button {
-    background-color: #619cdc;
+    background-color: #338fcc;
     color: white;
     border: none;
     padding: 0.5rem 1rem;
@@ -42,5 +42,5 @@ nav button {
 }
 
 nav button:hover {
-    background-color: #619cdc;
+    background-color: #338fcc;
 }

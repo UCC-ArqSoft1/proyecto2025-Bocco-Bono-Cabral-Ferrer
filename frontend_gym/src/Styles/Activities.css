@@ -6,58 +6,91 @@
     width: 100vw;
     height: 100vh;
     gap: 1rem;
+    background-color: white;
 }
 
 .activitiescontainer h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #0d2c54;
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    position: relative;
+    line-height: 1.2;
+}
+
+.activitiescontainer h1::after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    margin: 0.8rem auto 0 auto;
+    border-radius: 2px;
 }
 
 .activities-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
 }
 
 .activity-card {
-    background-color: #f9f9f9;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s ease;
+    background-color: #b1c5cb;
+    border-radius: 16px;
+    padding: 1.8rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .activity-card:hover {
-    transform: translateY(-4px);
+    transform: translateY(-6px);
+    box-shadow: 0 35px 35px rgba(0, 0, 0, 0.22);
 }
 
 .activity-card h2 {
-    margin-top: 0;
-    font-size: 1.3rem;
-    color: #333;
+    font-size: 1.6rem;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
 }
 
 .activity-card p {
-    color: #555;
+    font-size: 1rem;
+    color: #000000;
+    margin-bottom: 1rem;
+}
+
+.activity-card h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: #007bff;
 }
 
 .activity-card ul {
     padding-left: 1.2rem;
     margin-bottom: 1rem;
+    color: #444;
+    font-size: 0.95rem;
 }
 
 .activity-card li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
 }
 
 button {
+    align-self: start;
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 0.6rem 1.2rem;
+    padding: 0.6rem 1.4rem;
     border-radius: 8px;
     font-size: 1rem;
+    font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s ease;
 }

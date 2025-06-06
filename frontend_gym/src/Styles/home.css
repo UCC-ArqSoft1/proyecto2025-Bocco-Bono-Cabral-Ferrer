@@ -1,8 +1,8 @@
 /* Variables modernas */
 :root {
-    --primary-color: #ff4757;
+    --primary-color: #338fcc;
     --secondary-color: #2f3542;
-    --accent-color: #1e90ff;
+    --accent-color: #454efb;
     --text-color: #2f3542;
     --light-bg: #f1f2f6;
     --white: #ffffff;
@@ -35,7 +35,7 @@
     height: 90vh;
     width: 100%;
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-                url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+        url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
     background-size: cover;
     background-position: center;
     display: flex;
@@ -278,7 +278,7 @@
     padding: 5rem 0;
     text-align: center;
     background: linear-gradient(rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-                url('https://images.unsplash.com/photo-1534258936925-c58bed479fcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+        url('https://images.unsplash.com/photo-1534258936925-c58bed479fcb?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
     background-size: cover;
     background-position: center;
     color: var(--white);
@@ -300,7 +300,8 @@
 }
 
 /* Botones */
-.cta-button, .plan-button {
+.cta-button,
+.plan-button {
     background: var(--primary-color);
     color: var(--white);
     padding: 1rem 2rem;
@@ -316,7 +317,8 @@
     margin: 0 auto;
 }
 
-.cta-button:hover, .plan-button:hover {
+.cta-button:hover,
+.plan-button:hover {
     background: var(--accent-color);
     transform: translateY(-2px);
 }
@@ -335,8 +337,8 @@
         font-size: 1.2rem;
     }
 
-    .features-grid, 
-    .plans-container, 
+    .features-grid,
+    .plans-container,
     .testimonials-container {
         grid-template-columns: 1fr;
         padding: 0 15px;
@@ -378,7 +380,8 @@
         font-size: 2rem;
     }
 
-    .cta-button, .plan-button {
+    .cta-button,
+    .plan-button {
         padding: 0.8rem 1.5rem;
         font-size: 1rem;
         width: auto;
@@ -387,4 +390,4 @@
     .content-wrapper {
         padding: 0 10px;
     }
-} 
+}
