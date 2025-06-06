@@ -11,23 +11,17 @@ const Admn = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [editId, setEditId] = useState(null);
 
-    // Campos del formulario
+    // Campos del formulario básicos
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [capacity, setCapacity] = useState(0);
     const [category, setCategory] = useState("");
     const [profesor, setProfesor] = useState("");
 
-    // Para “Horarios” usamos un textarea que contenga un JSON de ActivitySchedule[]
-    const [scheduleText, setScheduleText] = useState(
-        `[
-  {
-    "day": "Lunes",
-    "start_time": "19:00",
-    "end_time": "20:00"
-  }
-]`
-    );
+    // Estado para horarios
+    const [schedules, setSchedules] = useState([
+        { day: "Lunes", start_time: "08:00", end_time: "09:00" }
+    ]);
 
     // Si tu API requiere token, lo recogemos de localStorage (o de donde lo tengas)
     const token = localStorage.getItem("token") || "";
@@ -37,7 +31,7 @@ const Admn = () => {
     // ------------------------------
     const fetchActivities = async () => {
         try {
-            const resp = await fetch("/activities", {
+            const resp = await fetch("http://localhost:8080/activities", {
                 headers: {
                     "Content-Type": "application/json",
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -46,8 +40,7 @@ const Admn = () => {
             if (!resp.ok) throw new Error("Error al obtener actividades");
 
             const data = await resp.json();
-            // Suponemos que el backend devuelve { activities: [...] } o un array directamente
-            setActivities(data.activities || data);
+            setActivities(data);
         } catch (error) {
             console.error("Error al cargar actividades:", error);
             alert("No se pudieron cargar las actividades. Revisa la consola.");
@@ -56,7 +49,6 @@ const Admn = () => {
 
     useEffect(() => {
         fetchActivities();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // ------------------------------
@@ -70,15 +62,22 @@ const Admn = () => {
         setCapacity(0);
         setCategory("");
         setProfesor("");
-        setScheduleText(
-            `[
-  {
-    "day": "Lunes",
-    "start_time": "19:00",
-    "end_time": "20:00"
-  }
-]`
-        );
+        setSchedules([{ day: "Lunes", start_time: "08:00", end_time: "09:00" }]);
+    };
+
+    // Funciones para manejar horarios
+    const addSchedule = () => {
+        setSchedules([...schedules, { day: "Lunes", start_time: "08:00", end_time: "09:00" }]);
+    };
+
+    const removeSchedule = (index) => {
+        setSchedules(schedules.filter((_, i) => i !== index));
+    };
+
+    const updateSchedule = (index, field, value) => {
+        const newSchedules = [...schedules];
+        newSchedules[index] = { ...newSchedules[index], [field]: value };
+        setSchedules(newSchedules);
     };
 
     // ------------------------------
@@ -97,41 +96,8 @@ const Admn = () => {
             return;
         }
 
-        // ----- Parsear el JSON de 'scheduleText' -----
-        let schedulesArr;
-        try {
-            schedulesArr = JSON.parse(scheduleText);
-            if (!Array.isArray(schedulesArr)) {
-                throw new Error("Debe ser un arreglo de objetos JSON");
-            }
-            // Verificar que cada objeto tenga las claves esperadas
-            schedulesArr.forEach((s, idx) => {
-                if (
-                    typeof s.day !== "string" ||
-                    typeof s.start_time !== "string" ||
-                    typeof s.end_time !== "string"
-                ) {
-                    throw new Error(
-                        `El elemento en la posición ${idx} no tiene las propiedades "day", "start_time" y "end_time" como strings.`
-                    );
-                }
-            });
-        } catch (err) {
-            alert(
-                "El campo de Horarios debe ser un JSON válido.\n\nEjemplo de formato:\n" +
-                `[
-  {
-    "day": "Lunes",
-    "start_time": "19:00",
-    "end_time": "20:00"
-  },
-  {
-    "day": "Miércoles",
-    "start_time": "18:30",
-    "end_time": "20:00"
-  }
-]`
-            );
+        if (schedules.length === 0) {
+            alert("Debe agregar al menos un horario.");
             return;
         }
 
@@ -142,14 +108,14 @@ const Admn = () => {
             capacity: parseInt(capacity, 10),
             category: category.trim(),
             profesor: profesor.trim(),
-            schedules: schedulesArr, // Aquí va el array de ActivitySchedule
+            schedules: schedules
         };
 
         try {
             let resp;
             if (isEditing && editId) {
                 // --> UPDATE (PUT /activities/:id)
-                resp = await fetch(`/activities/${editId}`, {
+                resp = await fetch(`http://localhost:8080/activities/${editId}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -161,7 +127,7 @@ const Admn = () => {
                 alert("Actividad actualizada correctamente.");
             } else {
                 // --> CREATE (POST /activities)
-                resp = await fetch("/activities", {
+                resp = await fetch("http://localhost:8080/activities", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -187,7 +153,7 @@ const Admn = () => {
     const handleDelete = async (id) => {
         if (!window.confirm("¿Estás seguro que deseas eliminar esta actividad?")) return;
         try {
-            const resp = await fetch(`/activities/${id}`, {
+            const resp = await fetch(`http://localhost:8080/activities/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -214,11 +180,7 @@ const Admn = () => {
         setCapacity(activity.capacity);
         setCategory(activity.category);
         setProfesor(activity.profesor);
-        // Convertimos schedules a JSON con identación
-        setScheduleText(JSON.stringify(activity.schedules, null, 2));
-
-        // Opcional: desplazarse al formulario
-        document.getElementById("admin-form")?.scrollIntoView({ behavior: "smooth" });
+        setSchedules(activity.schedules);
     };
 
     // ------------------------------
@@ -290,28 +252,47 @@ const Admn = () => {
                         />
                     </label>
 
-                    {/* 6) Horarios (JSON) */}
-                    <label>
-                        Horarios (JSON de ActivitySchedule[]):
-                        <textarea
-                            className="schedule-textarea"
-                            rows={6}
-                            value={scheduleText}
-                            onChange={(e) => setScheduleText(e.target.value)}
-                            placeholder={`Ejemplo de JSON para "schedules":\n[
-  {
-    "day": "Lunes",
-    "start_time": "19:00",
-    "end_time": "20:00"
-  },
-  {
-    "day": "Miércoles",
-    "start_time": "18:30",
-    "end_time": "20:00"
-  }
-]`}
-                        />
-                    </label>
+                    <div className="schedules-section">
+                        <h3>Horarios</h3>
+                        {schedules.map((schedule, index) => (
+                            <div key={index} className="schedule-item">
+                                <select
+                                    value={schedule.day}
+                                    onChange={(e) => updateSchedule(index, "day", e.target.value)}
+                                >
+                                    <option value="Lunes">Lunes</option>
+                                    <option value="Martes">Martes</option>
+                                    <option value="Miércoles">Miércoles</option>
+                                    <option value="Jueves">Jueves</option>
+                                    <option value="Viernes">Viernes</option>
+                                    <option value="Sábado">Sábado</option>
+                                    <option value="Domingo">Domingo</option>
+                                </select>
+                                <input
+                                    type="time"
+                                    value={schedule.start_time}
+                                    onChange={(e) => updateSchedule(index, "start_time", e.target.value)}
+                                />
+                                <input
+                                    type="time"
+                                    value={schedule.end_time}
+                                    onChange={(e) => updateSchedule(index, "end_time", e.target.value)}
+                                />
+                                {schedules.length > 1 && (
+                                    <button
+                                        type="button"
+                                        className="remove-schedule"
+                                        onClick={() => removeSchedule(index)}
+                                    >
+                                        Eliminar
+                                    </button>
+                                )}
+                            </div>
+                        ))}
+                        <button type="button" className="add-schedule" onClick={addSchedule}>
+                            + Agregar Horario
+                        </button>
+                    </div>
 
                     {/* Botones */}
                     <div className="button-group">
@@ -366,7 +347,7 @@ const Admn = () => {
                             {Array.isArray(activity.schedules) &&
                                 activity.schedules.map((s, idx) => (
                                     <li key={idx}>
-                                        Dia: <strong>{s.day}</strong> – Inicio: {s.start_time} – Fin: {s.end_time}
+                                        {s.day}: {s.start_time} - {s.end_time}
                                     </li>
                                 ))}
                         </ul>
