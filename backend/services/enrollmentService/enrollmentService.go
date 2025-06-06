@@ -4,6 +4,8 @@ import (
 	"errors"
 	clients "gym-api/backend/clients/enrollmentClient"
 	"time"
+	"gym-api/backend/domain"
+	"gym-api/backend/dao"
 )
 
 type EnrollmentService struct {
@@ -12,6 +14,7 @@ type EnrollmentService struct {
 
 type EnrollmentServiceInterface interface {
 	CreateEnrollment(userId, activityId int) error
+	GetUserEnrollments(userId int) ([]domain.Activity, error)
 }
 
 func (es EnrollmentService) CreateEnrollment(userId, activityId int) error {
@@ -35,4 +38,18 @@ func (es EnrollmentService) CreateEnrollment(userId, activityId int) error {
 
 	// Create the enrollment
 	return es.Repo.CreateEnrollment(userId, activityId, time.Now())
+}
+
+func (es EnrollmentService) GetUserEnrollments(userId int) ([]domain.Activity, error) {
+	enrollments, err := es.Repo.GetUserEnrollments(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	var activities []domain.Activity
+	for _, enrollment := range enrollments {
+		activities = append(activities, dao.DaoToDto(enrollment.Activity))
+	}
+
+	return activities, nil
 }

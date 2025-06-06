@@ -49,5 +49,24 @@ func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "enrollment created successfully"})
 }
 
-func GetEnrollment(ctx *gin.Context) {
+func (ec EnrollmentController) GetEnrollment(ctx *gin.Context) {
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	customClaims, ok := claims.(*utils.CustomClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+		return
+	}
+
+	activities, err := ec.EnrollmentService.GetUserEnrollments(customClaims.UserID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, activities)
 }
