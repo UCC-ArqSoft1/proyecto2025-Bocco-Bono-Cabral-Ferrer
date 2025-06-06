@@ -1,51 +1,130 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../Styles/Activities.css";
 
 const Activities = () => {
-    const activities = [
-        {
-            name: "Taekwondo",
-            description: "Arte marcial coreana",
-            schedule: [
-                { day: 2, "hora-inicio": "18:30", "hora-fin": "20:00" },
-                { day: 4, "hora-inicio": "18:30", "hora-fin": "20:00" }
-            ]
-        },
-        {
-            name: "Zumba",
-            description: "Ritmos latinos",
-            schedule: [
-                { day: 1, "hora-inicio": "19:30", "hora-fin": "20:30" },
-                { day: 3, "hora-inicio": "19:30", "hora-fin": "20:30" }
-            ]
+    const navigate = useNavigate();
+    const [activities, setActivities] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const isloggedin = localStorage.getItem("isLogin") === "true";
+    const userTypeId = parseInt(localStorage.getItem("userTypeId"), 10);
+    const isAdmin = userTypeId === 1;
+
+    useEffect(() => {
+        fetchActivities();
+    }, []);
+
+    const fetchActivities = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/activities');
+            if (!response.ok) {
+                throw new Error('Error al cargar las actividades');
+            }
+            const data = await response.json();
+            setActivities(data);
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
         }
-    ];
-
-    const weekDays = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
-    const isloggedin = localStorage.getItem("islogin") === "true";
-
-    const handleEnrollment = (activityName) => {
-        alert(`Inscribiendo en la actividad: ${activityName}`);
     };
 
+    const handleEnrollment = async (activityId) => {
+        if (!isloggedin) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+            const response = await fetch('http://localhost:8080/enrollments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    activity_id: activityId
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                alert('¡Inscripción exitosa!');
+            } else {
+                // Manejar errores específicos del backend
+                if (data.error && typeof data.error === 'string') {
+                    if (data.error.includes("already enrolled")) {
+                        alert("Ya estás inscrito en esta actividad");
+                    } else if (data.error.includes("full capacity")) {
+                        alert("Lo sentimos, esta actividad está llena");
+                    } else {
+                        alert("Error al inscribirse: " + data.error);
+                    }
+                } else {
+                    alert("Error desconocido al procesar la inscripción");
+                }
+            }
+        } catch (error) {
+            // Manejar errores de red o parsing JSON
+            if (error instanceof TypeError && error.message === 'Failed to fetch') {
+                alert("Error de conexión: No se pudo conectar con el servidor");
+            } else if (error instanceof SyntaxError) {
+                alert("Error del servidor: Respuesta inválida");
+            } else {
+                alert("Error inesperado: " + error.message);
+            }
+            console.error("Error detallado:", error);
+        }
+    };
+
+    if (loading) {
+        return <div className="loading">Cargando actividades...</div>;
+    }
+
+    if (error) {
+        return <div className="error">Error: {error}</div>;
+    }
+
     return (
-        <div className="activitiescontainer">
-            <h1>Actividades</h1>
-            <div className="activities-list">
-                {activities.map((activity, index) => (
-                    <div className="activity-card" key={index}>
-                        <h2>{activity.name}</h2>
+        <div className="activities-container">
+            <div className="activities-header">
+                <h2>Actividades Disponibles</h2>
+                {isAdmin && (
+                    <button
+                        className="admin-button"
+                        onClick={() => navigate("/admin/activities")}
+                    >
+                        Administrar Actividades
+                    </button>
+                )}
+            </div>
+            <div className="activities-grid">
+                {activities.map((activity) => (
+                    <div key={activity.id} className="activity-card">
+                        <h3>{activity.name}</h3>
                         <p>{activity.description}</p>
-                        <h3>Horarios</h3>
-                        <ul>
-                            {activity.schedule.map((schedule, i) => (
-                                <li key={i}>
-                                    Día: <strong>{weekDays[schedule.day]}</strong> - Hora de inicio: {schedule["hora-inicio"]} - Hora de finalizacion: {schedule["hora-fin"]}
-                                </li>
+                        <div className="activity-details">
+                            <p><strong>Profesor:</strong> {activity.profesor}</p>
+                            <p><strong>Categoría:</strong> {activity.category}</p>
+                            <p><strong>Capacidad:</strong> {activity.capacity} personas</p>
+                        </div>
+                        <div className="schedule">
+                            <h4>Horarios:</h4>
+                            {activity.schedules.map((schedule, idx) => (
+                                <p key={idx}>
+                                    {schedule.day}: {schedule.start_time} - {schedule.end_time}
+                                </p>
                             ))}
-                        </ul>
-                        {isloggedin && (
-                            <button onClick={() => handleEnrollment(activity.name)}>Inscribirme</button>
-                        )}
+                        </div>
+                        <button
+                            onClick={() => handleEnrollment(activity.id)}
+                            className={isloggedin ? "enroll-button" : "login-required-button"}
+                        >
+                            {isloggedin ? "Inscribirse" : "Iniciar sesión para inscribirse"}
+                        </button>
                     </div>
                 ))}
             </div>

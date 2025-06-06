@@ -56,5 +56,9 @@ func (er EnrollmentRepository) CreateEnrollment(userId int, activityId int, date
 		ActivityId:     activityId,
 		EnrollmentDate: date,
 	}
-	return er.DB.Create(&enrollment).Error
+	err := er.DB.Create(&enrollment)
+	if err != nil {
+		return err.Error
+	}
+	return nil
 }

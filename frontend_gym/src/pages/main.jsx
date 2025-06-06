@@ -6,6 +6,7 @@ import Login from '../pages/login.jsx';
 import Layout from '../components/Layout.jsx';
 import Home from '../pages/home.jsx';
 import Activities from '../pages/Activities.jsx';
+import ActivitiesAdmin from '../pages/activitiesAdmin.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -15,6 +16,7 @@ createRoot(document.getElementById('root')).render(
           <Route index element={<Home />} />
           <Route path="/Login" element={<Login />} />
           <Route path='/Activities' element={<Activities />} />
+          <Route path='/admin/activities' element={<ActivitiesAdmin />} />
         </Route>
       </Routes>
     </BrowserRouter>

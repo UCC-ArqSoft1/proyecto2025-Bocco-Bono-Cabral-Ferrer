@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Styles/Login.css";
 
@@ -7,8 +7,14 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    localStorage.setItem("isLogin", "false");
     const navigate = useNavigate();
+
+    useEffect(() => {
+        // Redirigir si ya está logueado
+        if (localStorage.getItem("isLogin") === "true") {
+            navigate("/activities");
+        }
+    }, [navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
