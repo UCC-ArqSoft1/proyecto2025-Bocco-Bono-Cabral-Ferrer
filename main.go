@@ -52,13 +52,13 @@ func main() {
 
 	router.POST("/users/login", userController.Login)
 	router.POST("/users/register", userController.Register)
-
+	router.GET("/activities", activityController.GetActivities)
 	authorized := router.Group("/")
 
 	authorized.Use(middleware.AuthMiddleware())
 
 	authorized.POST("/enrollment", enrollmentController.CreateEnrollment)
-	authorized.GET("/activities", activityController.GetActivities)
+	//authorized.GET("/activities", activityController.GetActivities)
 	authorized.GET("/activities/:id", activityController.GetActivityByID)
 	authorized.POST("/activities", activityController.CreateActivity)
 	authorized.DELETE("/activities/:id", activityController.DeleteActivity)
