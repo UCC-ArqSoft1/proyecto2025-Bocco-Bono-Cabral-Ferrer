@@ -2,7 +2,7 @@
     --primary-color: #338fcc;
     --secondary-color: #2f3542;
     --accent-color: #454efb;
-    --text-color: #2f3542;
+    --text-color: #000000;
     --light-bg: #f1f2f6;
     --white: #ffffff;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -57,7 +57,7 @@
     width: 100%;
     padding: 1rem;
     margin: 0.8rem 0;
-    border: 1px solid #ddd;
+    border: 1px solid #030303;
     border-radius: 8px;
     font-size: 1rem;
     transition: var(--transition);
@@ -93,7 +93,7 @@
 }
 
 .register-form button:disabled {
-    background-color: #ccc;
+    background-color: #000000;
     cursor: not-allowed;
     transform: none;
 }
@@ -164,4 +164,15 @@
         padding: 0.8rem;
         font-size: 1rem;
     }
+}
+/*Forzar color de texto desde CSS*/
+.register-form input,
+.register-form select {
+    /* …tus otras propiedades… */
+    color: var(--text-color);      /* <— aquí el color de la variable (negro) */
+}
+
+/* opcionalmente matizas el placeholder */
+.register-form input::placeholder {
+  color: #aaa;
 }
