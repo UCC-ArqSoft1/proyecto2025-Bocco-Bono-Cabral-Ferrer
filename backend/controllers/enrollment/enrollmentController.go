@@ -4,6 +4,7 @@ import (
 	services "gym-api/backend/services/enrollmentService"
 	"gym-api/backend/utils"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,15 +34,15 @@ func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
 	// Now you can use the user ID
 	userID := customClaims.UserID
 	type EnrollmentRequest struct {
-		ActivityId int `json:"activity_id"`
+		ActivityId string `json:"activity_id"`
 	}
 	var request EnrollmentRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	err := ec.EnrollmentService.CreateEnrollment(userID, request.ActivityId)
+	activityId, _ := strconv.Atoi(request.ActivityId)
+	err := ec.EnrollmentService.CreateEnrollment(userID, activityId)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

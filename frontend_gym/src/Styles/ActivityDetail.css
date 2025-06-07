@@ -1,0 +1,113 @@
+.activity-detail-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.back-button {
+    background-color: #f0f0f0;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #333;
+}
+
+.back-button:hover {
+    background-color: #e0e0e0;
+}
+
+.activity-detail-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    color: #333;
+}
+
+.activity-detail-image {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.activity-detail-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.activity-detail-content {
+    padding: 2rem;
+    color: #333;
+}
+
+.activity-detail-card h1 {
+    font-size: 2rem;
+    margin: 1rem 2rem;
+    color: #333;
+}
+
+.detail-section {
+    margin-bottom: 2rem;
+}
+
+.detail-section h3 {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+.detail-section p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #333;
+}
+
+.detail-section strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.enroll-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.enroll-button:hover {
+    background-color: #45a049;
+}
+
+.admin-button {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.admin-button:hover {
+    background-color: #1976D2;
+}
+
+.loading,
+.error {
+    text-align: center;
+    padding: 2rem;
+    font-size: 1.2rem;
+    color: #333;
+}
