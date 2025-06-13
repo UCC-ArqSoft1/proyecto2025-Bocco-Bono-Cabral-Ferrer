@@ -9,7 +9,8 @@ const SearchActivities = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
+    const isAdmin = user?.typeId === 1;
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -69,18 +70,28 @@ const SearchActivities = () => {
     return (
         <section className="search-section">
             <div className="search-container">
-                <form onSubmit={handleSearch} className="search-form">
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Buscar actividades..."
-                        className="search-input"
-                    />
-                    <button type="submit" className="search-button" disabled={isSearching}>
-                        {isSearching ? 'Buscando...' : 'Buscar'}
-                    </button>
-                </form>
+                <div className="search-header">
+                    <form onSubmit={handleSearch} className="search-form">
+                        <input
+                            type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            placeholder="Buscar actividades..."
+                            className="search-input"
+                        />
+                        <button type="submit" className="search-button" disabled={isSearching}>
+                            {isSearching ? 'Buscando...' : 'Buscar'}
+                        </button>
+                    </form>
+                    {isAdmin && (
+                        <button
+                            className="admin-button"
+                            onClick={() => navigate('/admin/activities')}
+                        >
+                            Administrar Actividades
+                        </button>
+                    )}
+                </div>
 
                 {error && <div className="search-error">{error}</div>}
 

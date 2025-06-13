@@ -44,7 +44,13 @@ func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
 	activityId, _ := strconv.Atoi(request.ActivityId)
 	err := ec.EnrollmentService.CreateEnrollment(userID, activityId)
 	if err != nil {
-		ctx.JSON(http.StatusConflict, gin.H{"error": "Ya estás inscripto a esta actividad"})
+		if err.Error() == "activity is at full capacity" {
+			ctx.JSON(http.StatusConflict, gin.H{"error": "La actividad ha alcanzado su capacidad máxima"})
+		} else if err.Error() == "user is already enrolled in this activity" {
+			ctx.JSON(http.StatusConflict, gin.H{"error": "Ya estás inscripto a esta actividad"})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error al inscribirse en la actividad"})
+		}
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "enrollment created successfully"})
