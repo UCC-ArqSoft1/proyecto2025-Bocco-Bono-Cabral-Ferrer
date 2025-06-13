@@ -14,12 +14,10 @@ vendor/
 
 # Archivos de configuración y credenciales
 .env
-*.env
+
 
 # Configuración de editores
 .vscode/
 .idea/
 *.swp
 
-#variables de entorno sensibles 
-.env
