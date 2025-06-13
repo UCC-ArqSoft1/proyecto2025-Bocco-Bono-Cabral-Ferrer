@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import "../Styles/ActivityDetail.css";
+import { useAuth } from '../hooks/useAuth';
+import { toast } from 'react-toastify';
 
 const ActivityDetail = () => {
     const [activity, setActivity] = useState(null);
     const [error, setError] = useState(null);
     const { id } = useParams();
     const navigate = useNavigate();
-    const isloggedin = localStorage.getItem("isLogin") === "true";
-    const userTypeId = parseInt(localStorage.getItem("userTypeId"), 10);
-    const isAdmin = userTypeId === 1;
+    const { isAuthenticated, user } = useAuth();
+    const isAdmin = user?.typeId === 1;
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -29,7 +30,7 @@ const ActivityDetail = () => {
     }, [id]);
 
     const handleEnrollment = async () => {
-        if (!isloggedin) {
+        if (!isAuthenticated) {
             navigate("/login");
             return;
         }
@@ -47,50 +48,18 @@ const ActivityDetail = () => {
                 })
             });
 
-            let data;
-            try {
-                data = await response.json();
-            } catch (e) {
-                console.error('Error parsing response:', e);
-                alert('Error al procesar la respuesta del servidor');
-                return;
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Error al inscribirse en la actividad');
             }
 
-            if (response.ok) {
-                alert('¡Inscripción exitosa!');
-            } else {
-                if (data.error && typeof data.error === 'string') {
-                    if (data.error.includes("sql") || data.error.includes("Scan error")) {
-                        alert("Ya estás inscrito en esta actividad");
-                    } else if (data.error.toLowerCase().includes("already enrolled") ||
-                        data.error.toLowerCase().includes("ya inscrito") ||
-                        data.error.toLowerCase().includes("ya está inscrito")) {
-                        alert("Ya estás inscrito en esta actividad");
-                    } else if (data.error.toLowerCase().includes("full capacity") ||
-                        data.error.toLowerCase().includes("capacidad llena") ||
-                        data.error.toLowerCase().includes("no hay cupo")) {
-                        alert("Lo sentimos, esta actividad está llena");
-                    } else {
-                        alert("No se pudo completar la inscripción. Por favor, intenta nuevamente más tarde.");
-                        console.error("Error original:", data.error);
-                    }
-                } else {
-                    alert("Error desconocido al procesar la inscripción");
-                }
-            }
-        } catch (error) {
-            if (error instanceof TypeError && error.message === 'Failed to fetch') {
-                alert("Error de conexión: No se pudo conectar con el servidor");
-            } else {
-                alert("Error al procesar la inscripción. Por favor, intenta nuevamente más tarde.");
-            }
-            console.error("Error detallado:", error);
+            toast.success('Inscripción exitosa!');
+        } catch (err) {
+            toast.error(err.message);
+            setError(err.message);
         }
     };
-
-    if (error) {
-        return <div className="error">Error: {error}</div>;
-    }
 
     if (!activity) {
         return <div className="loading">Cargando...</div>;
@@ -107,6 +76,8 @@ const ActivityDetail = () => {
             <button className="back-button" onClick={() => navigate('/activities')}>
                 Volver a Actividades
             </button>
+
+            {error && <div className="error-message">{error}</div>}
 
             <div className="activity-detail-card">
                 {activity.image_url && (
@@ -146,7 +117,7 @@ const ActivityDetail = () => {
                         ))}
                     </div>
 
-                    {isloggedin && !isAdmin && (
+                    {isAuthenticated && !isAdmin && (
                         <button
                             onClick={handleEnrollment}
                             className="enroll-button"

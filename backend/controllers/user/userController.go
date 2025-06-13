@@ -26,7 +26,15 @@ func (uc UserController) Login(ctx *gin.Context) {
 
 	userID, token, userTypeId, err := uc.UserService.Login(request.Email, request.Password)
 	if err != nil {
-		ctx.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		if errors.Is(err, services.ErrInvalidPassword) {
+			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña Invalida"})
+			return
+		}
+		if errors.Is(err, services.ErrUserNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 

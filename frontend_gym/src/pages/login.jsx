@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Styles/Login.css";
+import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
     const [email, setEmail] = useState("");
@@ -8,13 +9,13 @@ const Login = () => {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { isAuthenticated, login } = useAuth();
 
     useEffect(() => {
-        // Redirigir si ya está logueado
-        if (localStorage.getItem("isLogin") === "true") {
+        if (isAuthenticated) {
             navigate("/activities");
         }
-    }, [navigate]);
+    }, [isAuthenticated, navigate]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -22,31 +23,10 @@ const Login = () => {
         setIsLoading(true);
 
         try {
-            const response = await fetch('http://localhost:8080/users/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al iniciar sesión');
+            const success = await login(email, password);
+            if (success) {
+                navigate("/activities");
             }
-
-            // Store the token and user info
-            localStorage.setItem("token", data.token);
-            localStorage.setItem("userId", data.user_id);
-            localStorage.setItem("userTypeId", data.user_type_id);
-            localStorage.setItem("isLogin", "true");
-
-            // Redirect based on user type
-            navigate("/activities");
         } catch (err) {
             setError(err.message);
         } finally {

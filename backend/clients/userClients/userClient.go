@@ -29,6 +29,9 @@ func (mySQLDatasource UserRepository) GetUserByEmail(email string) (dao.User, er
 	var user dao.User
 	result := mySQLDatasource.DB.First(&user, "email = ?", email)
 	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			return dao.User{}, errors.New("User not found")
+		}
 		return dao.User{}, fmt.Errorf("%w", result.Error)
 	}
 	return user, nil

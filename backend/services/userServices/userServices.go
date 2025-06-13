@@ -16,13 +16,16 @@ type UserServiceInterface interface {
 	Register(name string, lastName string, email string, password string, birth_date string, sex string) (int, int, error)
 }
 
+var ErrUserNotFound = errors.New("user not found")
+var ErrInvalidPassword = errors.New("invalid password")
+
 func (services UserService) Login(email string, password string) (int, string, int, error) {
 	daoUser, err := services.Repo.GetUserByEmail(email)
 	if err != nil {
-		return 0, "", 0, fmt.Errorf("error getting user: %w", err)
+		return 0, "", 0, ErrUserNotFound
 	}
 	if utils.HashPassword(password) != daoUser.PasswordHash {
-		return 0, "", 0, fmt.Errorf("invalid password")
+		return 0, "", 0, ErrInvalidPassword
 	}
 	token, err := utils.GenerateJWT(daoUser.Id, daoUser.UserTypeId)
 	if err != nil {

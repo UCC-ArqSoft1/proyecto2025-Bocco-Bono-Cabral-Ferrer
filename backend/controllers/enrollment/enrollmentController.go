@@ -20,7 +20,7 @@ type EnrollmentControllersInterface interface {
 func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
-		// Handle error - no claims found
+		// Handle error - el usuario no tiene los claims necesarios para inscribirse
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
@@ -44,7 +44,7 @@ func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
 	activityId, _ := strconv.Atoi(request.ActivityId)
 	err := ec.EnrollmentService.CreateEnrollment(userID, activityId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusConflict, gin.H{"error": "Ya estás inscripto a esta actividad"})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "enrollment created successfully"})

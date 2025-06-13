@@ -1,10 +1,12 @@
 import "../Styles/home.css";
 import { FaDumbbell, FaUserFriends, FaClock, FaHeart } from 'react-icons/fa';
 import { useNavigate } from "react-router-dom";
+import React from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 const Home = () => {
     const navigate = useNavigate();
-    const isLoggedIn = localStorage.getItem("isLogin") === "true";
+    const { isAuthenticated } = useAuth();
 
     const handleJoinNow = () => {
         navigate("/register");
@@ -17,7 +19,7 @@ const Home = () => {
                 <div className="hero-content">
                     <h1>Transforma Tu Vida</h1>
                     <p>Comienza tu viaje fitness hoy con el mejor equipo y entrenadores</p>
-                    {!isLoggedIn && (
+                    {!isAuthenticated && (
                         <button className="cta-button" onClick={handleJoinNow}>¡Únete Ahora!</button>
                     )}
                 </div>
@@ -119,7 +121,7 @@ const Home = () => {
                 <div className="content-wrapper">
                     <h2>¿Listo para Comenzar tu Viaje Fitness?</h2>
                     <p>¡Únete ahora y obtén tu primer mes al 50% de descuento!</p>
-                    {!isLoggedIn && (
+                    {!isAuthenticated && (
                         <button className="cta-button" onClick={handleJoinNow}>¡Comienza Hoy!</button>
                     )}
                 </div>

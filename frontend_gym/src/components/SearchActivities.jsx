@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../Styles/SearchActivities.css';
+import { useAuth } from '../hooks/useAuth';
 
 const SearchActivities = () => {
     const [searchTerm, setSearchTerm] = useState('');
@@ -8,7 +9,7 @@ const SearchActivities = () => {
     const [isSearching, setIsSearching] = useState(false);
     const [error, setError] = useState('');
     const navigate = useNavigate();
-    const isLoggedIn = localStorage.getItem("isLogin") === "true";
+    const { isAuthenticated } = useAuth();
 
     const handleSearch = async (e) => {
         e.preventDefault();
@@ -35,16 +36,21 @@ const SearchActivities = () => {
     };
 
     const handleEnrollment = async (activityId) => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+
         try {
-            const response = await fetch('http://localhost:8080/enrollments', {
+            const token = localStorage.getItem('token');
+            const response = await fetch('http://localhost:8080/enrollment', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    activity_id: activityId,
-                    user_id: localStorage.getItem('userId')
+                    activity_id: activityId
                 })
             });
 
@@ -54,10 +60,9 @@ const SearchActivities = () => {
                 throw new Error(data.error || 'Error al inscribirse en la actividad');
             }
 
-            alert('¡Inscripción exitosa!');
-            navigate('/activities');
+            alert('Inscripción exitosa!');
         } catch (err) {
-            alert(err.message);
+            setError(err.message);
         }
     };
 
@@ -103,7 +108,7 @@ const SearchActivities = () => {
                                             </p>
                                         ))}
                                     </div>
-                                    {isLoggedIn && (
+                                    {isAuthenticated && (
                                         <button
                                             onClick={() => handleEnrollment(activity.id)}
                                             className="enroll-button"

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Styles/register.css";
+import { useAuth } from "../hooks/useAuth";
 
 const Register = () => {
     const [formData, setFormData] = useState({
@@ -15,13 +16,13 @@ const Register = () => {
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
+    const { isAuthenticated, register } = useAuth();
 
     useEffect(() => {
-        // Redirigir si ya está logueado
-        if (localStorage.getItem("isLogin") === "true") {
+        if (isAuthenticated) {
             navigate("/activities");
         }
-    }, [navigate]);
+    }, [isAuthenticated, navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -36,7 +37,6 @@ const Register = () => {
         setError("");
         setIsLoading(true);
 
-        // Validar que las contraseñas coincidan
         if (formData.password !== formData.confirmPassword) {
             setError("Las contraseñas no coinciden");
             setIsLoading(false);
@@ -44,29 +44,18 @@ const Register = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:8080/users/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nombre: formData.nombre,
-                    apellido: formData.apellido,
-                    email: formData.email,
-                    password: formData.password,
-                    fechaNacimiento: formData.fechaNacimiento,
-                    sexo: formData.sexo
-                }),
+            const success = await register({
+                nombre: formData.nombre,
+                apellido: formData.apellido,
+                email: formData.email,
+                password: formData.password,
+                fechaNacimiento: formData.fechaNacimiento,
+                sexo: formData.sexo
             });
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al registrarse');
+            if (success) {
+                navigate("/login");
             }
-
-            // Redirigir al login después de un registro exitoso
-            navigate("/login");
         } catch (err) {
             setError(err.message);
         } finally {
@@ -114,15 +103,14 @@ const Register = () => {
                 <input
                     type="password"
                     name="confirmPassword"
-                    placeholder="Confirmar contraseña"
+                    placeholder="Confirmar Contraseña"
                     value={formData.confirmPassword}
                     onChange={handleChange}
                     required
                 />
                 <input
-                    type="text"
+                    type="date"
                     name="fechaNacimiento"
-                    placeholder="Fecha de Nacimiento (DD/MM/AAAA)"
                     value={formData.fechaNacimiento}
                     onChange={handleChange}
                     required
@@ -130,12 +118,10 @@ const Register = () => {
                 <select
                     name="sexo"
                     value={formData.sexo}
-                    placeholder="Sexo"
                     onChange={handleChange}
                     required
-                    className="register-select"
                 >
-                    <option value="">Seleccione su sexo</option>
+                    <option value="">Seleccionar sexo</option>
                     <option value="M">Masculino</option>
                     <option value="F">Femenino</option>
                     <option value="O">Otro</option>

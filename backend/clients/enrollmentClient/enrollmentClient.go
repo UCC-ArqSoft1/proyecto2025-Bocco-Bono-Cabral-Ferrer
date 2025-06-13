@@ -12,8 +12,6 @@ type EnrollmentRepository struct {
 	DB *gorm.DB
 }
 
-// Struct temporal con fecha como []uint8
-
 type EnrollmentRepositoryInterface interface {
 	IsEnrolled(userId, activityId int) (bool, error)
 	CountEnrollmentsAndCapacity(activityId int) (int, int, error)
@@ -22,9 +20,16 @@ type EnrollmentRepositoryInterface interface {
 }
 
 func (er EnrollmentRepository) IsEnrolled(userId, activityId int) (bool, error) {
-	var enrollment dao.Enrollment
+	type EnrollmentTemp struct {
+		UserId         int
+		ActivityId     int
+		EnrollmentDate []uint8
+	}
+	var enrollment EnrollmentTemp
 
 	result := er.DB.
+		Table("enrollments").
+		Select("user_id, activity_id, enrollment_date").
 		Where("user_id = ? AND activity_id = ?", userId, activityId).
 		First(&enrollment)
 
