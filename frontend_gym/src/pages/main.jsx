@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../Styles/index.css';
 import Login from '../pages/login.jsx';
 import Register from '../pages/register.jsx';
-import Layout from '../components/Layout.jsx';
+import Layout from '../components/layout.jsx';
 import Home from '../pages/home.jsx';
 import Activities from '../pages/Activities.jsx';
 import ActivitiesAdmin from '../pages/activitiesAdmin.jsx';

@@ -1,83 +1,119 @@
+/* Variables CSS */
+:root {
+    --primary-color: #4CAF50;
+    --accent-color: #45a049;
+    --text-color: #333;
+    --background-color: #f5f5f5;
+    --card-background: #ffffff;
+    --border-color: #e0e0e0;
+    --error-color: #f44336;
+    --success-color: #4CAF50;
+}
+
+/* Estilos generales */
 .search-section {
-    padding: 4rem 0;
-    background-color: var(--light-bg);
+    padding: 2rem 1rem;
+    background-color: var(--background-color);
+    min-height: 100vh;
 }
 
 .search-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+}
+
+.search-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
 }
 
 .search-form {
     display: flex;
     gap: 1rem;
-    margin-bottom: 2rem;
+    flex: 1;
     max-width: 600px;
-    margin: 0 auto 2rem;
 }
 
 .search-input {
     flex: 1;
-    padding: 1rem;
-    border: 2px solid #ddd;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     font-size: 1rem;
-    transition: all 0.3s ease;
+    transition: border-color 0.3s ease;
 }
 
 .search-input:focus {
-    border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 5px rgba(51, 143, 204, 0.3);
+    border-color: var(--primary-color);
 }
 
 .search-button {
-    padding: 1rem 2rem;
+    padding: 0.75rem 1.5rem;
     background-color: var(--primary-color);
     color: white;
     border: none;
     border-radius: 8px;
     font-size: 1rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
 }
 
-.search-button:hover {
+.search-button:hover:not(:disabled) {
     background-color: var(--accent-color);
 }
 
 .search-button:disabled {
-    background-color: #ccc;
+    background-color: #cccccc;
     cursor: not-allowed;
 }
 
+.admin-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    white-space: nowrap;
+}
+
+.admin-button:hover {
+    background-color: #1976D2;
+}
+
 .search-error {
-    color: #c62828;
-    background-color: #ffebee;
+    background-color: var(--error-color);
+    color: white;
     padding: 1rem;
     border-radius: 8px;
-    margin: 1rem 0;
+    margin-bottom: 2rem;
     text-align: center;
 }
 
 .search-results {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
     gap: 2rem;
-    margin-top: 2rem;
 }
 
 .activity-card {
-    background: white;
+    background-color: var(--card-background);
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .activity-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .activity-image {
@@ -90,6 +126,11 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.activity-card:hover .activity-image img {
+    transform: scale(1.05);
 }
 
 .activity-content {
@@ -97,14 +138,15 @@
 }
 
 .activity-content h3 {
-    margin: 0 0 1rem;
-    color: var(--primary-color);
+    color: var(--text-color);
+    margin: 0 0 1rem 0;
     font-size: 1.5rem;
+    font-weight: 600;
 }
 
 .activity-content p {
-    margin: 0 0 1rem;
-    color: var(--text-color);
+    color: #666;
+    margin: 0 0 1rem 0;
     line-height: 1.6;
 }
 
@@ -136,8 +178,35 @@
     margin-top: 1rem;
 }
 
-.enroll-button:hover {
+.enroll-button:hover:not(:disabled) {
     background-color: var(--accent-color);
+}
+
+.enroll-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.cancel-button {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: var(--error-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.cancel-button:hover:not(:disabled) {
+    background-color: #d32f2f;
+}
+
+.cancel-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
 @media (max-width: 768px) {

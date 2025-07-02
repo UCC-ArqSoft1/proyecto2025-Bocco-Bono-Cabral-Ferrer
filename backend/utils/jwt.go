@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -9,7 +10,6 @@ import (
 
 const (
 	jwtDuration = time.Minute * 15
-	jwtSecret   = "jwtSecret"
 )
 
 // CustomClaims extends the standard JWT claims with our custom fields
@@ -21,7 +21,7 @@ type CustomClaims struct {
 
 // GetJWTSecret returns the JWT secret key
 func GetJWTSecret() string {
-	return jwtSecret
+	return os.Getenv("JWT_PASSWORD")
 }
 
 func GenerateJWT(userID int, userTypeID int) (string, error) {
@@ -45,8 +45,8 @@ func GenerateJWT(userID int, userTypeID int) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// Firmar el token
-	fmt.Println(jwtSecret)
-	tokenString, err := token.SignedString([]byte(jwtSecret))
+	fmt.Println(os.Getenv("JWT_PASSWORD"))
+	tokenString, err := token.SignedString([]byte(os.Getenv("JWT_PASSWORD")))
 	if err != nil {
 		return "", fmt.Errorf("error generating token: %w", err)
 	}

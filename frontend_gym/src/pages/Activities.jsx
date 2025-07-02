@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import MyEnrollments from '../components/MyEnrollments';
 import "../Styles/Activities.css";
 
 const Activities = () => {
@@ -7,13 +9,16 @@ const Activities = () => {
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearching, setIsSearching] = useState(false);
+    const [showMyEnrollments, setShowMyEnrollments] = useState(false);
     const navigate = useNavigate();
-    const userTypeId = parseInt(localStorage.getItem("userTypeId"), 10);
-    const isAdmin = userTypeId === 1;
+    const { isAuthenticated, user } = useAuth();
+    const isAdmin = user?.typeId === 1;
 
     useEffect(() => {
-        fetchActivities();
-    }, []);
+        if (!showMyEnrollments) {
+            fetchActivities();
+        }
+    }, [showMyEnrollments]);
 
     const fetchActivities = async () => {
         try {
@@ -54,37 +59,74 @@ const Activities = () => {
         }
     };
 
+    const handleMyEnrollmentsClick = () => {
+        setShowMyEnrollments(true);
+    };
+
+    const handleBackToActivities = () => {
+        setShowMyEnrollments(false);
+    };
+
     if (error) {
         return <div className="error">Error: {error}</div>;
+    }
+
+    if (showMyEnrollments) {
+        return (
+            <div className="activities-container">
+                <div className="activities-header">
+                    <button
+                        className="back-to-activities-button"
+                        onClick={handleBackToActivities}
+                    >
+                        ← Volver a Actividades
+                    </button>
+                    <h2></h2>
+                </div>
+                <MyEnrollments />
+            </div>
+        );
     }
 
     return (
         <div className="activities-container">
             <div className="activities-header">
                 <h2>Actividades Disponibles</h2>
-                {isAdmin && (
-                    <button
-                        className="admin-button"
-                        onClick={() => navigate("/admin/activities")}
-                    >
-                        Administrar Actividades
-                    </button>
-                )}
-                <div className="search-container">
-                    <form onSubmit={handleSearch} className="search-form">
-                        <input
-                            type="text"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Buscar actividades..."
-                            className="search-input"
-                        />
-                        <button type="submit" className="search-button" disabled={isSearching}>
-                            {isSearching ? 'Buscando...' : 'Buscar'}
+                <div className="header-buttons">
+                    {isAuthenticated && !isAdmin && (
+                        <button
+                            className="my-enrollments-button"
+                            onClick={handleMyEnrollmentsClick}
+                        >
+                            Mis Inscripciones
                         </button>
-                    </form>
+                    )}
+                    {isAdmin && (
+                        <button
+                            className="admin-button"
+                            onClick={() => navigate("/admin/activities")}
+                        >
+                            Administrar Actividades
+                        </button>
+                    )}
                 </div>
             </div>
+
+            <div className="search-container">
+                <form onSubmit={handleSearch} className="search-form">
+                    <input
+                        type="text"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        placeholder="Buscar actividades..."
+                        className="search-input"
+                    />
+                    <button type="submit" className="search-button" disabled={isSearching}>
+                        {isSearching ? 'Buscando...' : 'Buscar'}
+                    </button>
+                </form>
+            </div>
+
             <div className="activities-grid">
                 {Array.isArray(activities) && activities.map((activity) => (
                     <div

@@ -1,9 +1,10 @@
 package services
 
 import (
-	clients "gym-api/backend/clients/activityclient"
-	"gym-api/backend/dao"
-	"gym-api/backend/domain"
+	"errors"
+	clients "gym-api/clients/activityclient"
+	"gym-api/dao"
+	"gym-api/domain"
 )
 
 type ActivityServiceImpl struct {
@@ -63,6 +64,9 @@ func (a ActivityServiceImpl) CreateActivity(
 				EndTime:   s.EndTime,
 			})
 		}
+	}
+	if len(validSchedules) == 0 {
+		return errors.New("Debe ingresar al menos un horario válido")
 	}
 	return a.Repo.CreateActivity(name, description, capacity, category, profesor, imageurl, validSchedules)
 }

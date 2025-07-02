@@ -3,8 +3,8 @@ package services
 import (
 	"errors"
 	"fmt"
-	clients "gym-api/backend/clients/userClients"
-	"gym-api/backend/utils"
+	clients "gym-api/clients/userClients"
+	"gym-api/utils"
 )
 
 type UserService struct {

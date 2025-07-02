@@ -1,7 +1,7 @@
 package dao
 
 import (
-	"gym-api/backend/domain"
+	"gym-api/domain"
 )
 
 type Activity struct {

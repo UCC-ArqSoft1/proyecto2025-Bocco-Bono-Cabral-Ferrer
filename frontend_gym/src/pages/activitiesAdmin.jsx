@@ -1,7 +1,32 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import "../Styles/activitiesAdmin.css";
 
 const Admn = () => {
+    const navigate = useNavigate();
+    const { isAuthenticated, user } = useAuth();
+    const isAdmin = user?.typeId === 1;
+
+    // Verificar si el usuario es administrador
+    useEffect(() => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+
+        if (!isAdmin) {
+            alert('No tienes permisos de administrador para acceder a esta página');
+            navigate('/activities');
+            return;
+        }
+    }, [isAuthenticated, isAdmin, navigate]);
+
+    // Si no es admin, no renderizar nada
+    if (!isAuthenticated || !isAdmin) {
+        return null;
+    }
+
     // ------------------------------
     // 1) ESTADOS
     // ------------------------------
@@ -23,8 +48,6 @@ const Admn = () => {
     const [schedules, setSchedules] = useState([
         { day: "Lunes", start_time: "08:00", end_time: "09:00" }
     ]);
-
-    // Si tu API requiere token, lo recogemos de localStorage (o de donde lo tengas)
     const token = localStorage.getItem("token") || "";
 
     // ------------------------------
@@ -38,13 +61,19 @@ const Admn = () => {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
             });
-            if (!resp.ok) throw new Error("Error al obtener actividades");
+            if (!resp.ok) {
+                const errorData = await resp.json();
+                if (resp.status === 403) {
+                    throw new Error("No tienes permisos de administrador para ver las actividades");
+                }
+                throw new Error(errorData.error || "Error al obtener actividades");
+            }
 
             const data = await resp.json();
-            setActivities(data);
+            setActivities(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error("Error al cargar actividades:", error);
-            alert("No se pudieron cargar las actividades. Revisa la consola.");
+            alert(error.message || "No se pudieron cargar las actividades. Revisa la consola.");
         }
     };
 
@@ -126,7 +155,13 @@ const Admn = () => {
                     },
                     body: JSON.stringify(body),
                 });
-                if (!resp.ok) throw new Error("Error al actualizar");
+                if (!resp.ok) {
+                    const errorData = await resp.json();
+                    if (resp.status === 403) {
+                        throw new Error("No tienes permisos de administrador para actualizar actividades");
+                    }
+                    throw new Error(errorData.error || "Error al actualizar");
+                }
                 alert("Actividad actualizada correctamente.");
             } else {
                 // --> CREATE (POST /activities)
@@ -138,7 +173,13 @@ const Admn = () => {
                     },
                     body: JSON.stringify(body),
                 });
-                if (!resp.ok) throw new Error("Error al crear");
+                if (!resp.ok) {
+                    const errorData = await resp.json();
+                    if (resp.status === 403) {
+                        throw new Error("No tienes permisos de administrador para crear actividades");
+                    }
+                    throw new Error(errorData.error || "Error al crear");
+                }
                 alert("Actividad creada correctamente.");
             }
 
@@ -146,7 +187,7 @@ const Admn = () => {
             fetchActivities();
         } catch (err) {
             console.error(err);
-            alert("Ocurrió un problema con el servidor. Revisa la consola.");
+            alert(err.message || "Ocurrió un problema con el servidor. Revisa la consola.");
         }
     };
 
@@ -163,12 +204,18 @@ const Admn = () => {
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 },
             });
-            if (!resp.ok) throw new Error("Error al eliminar");
+            if (!resp.ok) {
+                const errorData = await resp.json();
+                if (resp.status === 403) {
+                    throw new Error("No tienes permisos de administrador para eliminar actividades");
+                }
+                throw new Error(errorData.error || "Error al eliminar");
+            }
             alert("Actividad eliminada.");
             fetchActivities();
         } catch (err) {
             console.error(err);
-            alert("No se pudo eliminar la actividad. Revisa la consola.");
+            alert(err.message || "No se pudo eliminar la actividad. Revisa la consola.");
         }
     };
 
@@ -185,6 +232,12 @@ const Admn = () => {
         setProfesor(activity.profesor);
         setImageUrl(activity.image_url || "");
         setSchedules(activity.schedules);
+    };
+
+    const getImageUrl = (imageUrl) => {
+        if (!imageUrl) return null;
+        if (imageUrl.startsWith('http')) return imageUrl;
+        return imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
     };
 
     // ------------------------------
@@ -347,7 +400,7 @@ const Admn = () => {
                         {/* Imagen de la actividad */}
                         {activity.image_url && (
                             <div className="activity-image">
-                                <img src={activity.image_url} alt={activity.name} />
+                                <img src={getImageUrl(activity.image_url)} alt={activity.name} />
                             </div>
                         )}
 
@@ -367,6 +420,7 @@ const Admn = () => {
                         <h4>Horarios:</h4>
                         <ul>
                             {Array.isArray(activity.schedules) &&
+                                activities.length === 0 &&
                                 activity.schedules.map((s, idx) => (
                                     <li key={idx}>
                                         {s.day}: {s.start_time} - {s.end_time}

@@ -2,15 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import "../Styles/ActivityDetail.css";
 import { useAuth } from '../hooks/useAuth';
+import { useEnrollment } from '../hooks/useEnrollment.jsx';
+import { enrollmentApi } from '../utils/enrollmentApi.jsx';
 import { toast } from 'react-toastify';
 
 const ActivityDetail = () => {
     const [activity, setActivity] = useState(null);
     const [error, setError] = useState(null);
+    const [capacityInfo, setCapacityInfo] = useState(null);
     const { id } = useParams();
     const navigate = useNavigate();
     const { isAuthenticated, user } = useAuth();
     const isAdmin = user?.typeId === 1;
+
+    // Usar el hook personalizado para manejar inscripciones
+    const { isEnrolled, isLoading, error: enrollmentError, toggleEnrollment } = useEnrollment(id);
 
     useEffect(() => {
         const fetchActivity = async () => {
@@ -29,35 +35,46 @@ const ActivityDetail = () => {
         fetchActivity();
     }, [id]);
 
-    const handleEnrollment = async () => {
+    useEffect(() => {
+        const fetchCapacityInfo = async () => {
+            if (!isAuthenticated) return;
+
+            try {
+                const capacityData = await enrollmentApi.getActivityCapacity(id);
+                setCapacityInfo(capacityData);
+            } catch (err) {
+                console.error('Error fetching capacity info:', err);
+                // Si el error es de autenticación, redirigir al login
+                if (err.message.includes('sesión ha expirado') || err.message.includes('token de autenticación')) {
+                    navigate('/login');
+                }
+            }
+        };
+
+        fetchCapacityInfo();
+    }, [id, isAuthenticated, navigate]);
+
+    const handleEnrollmentToggle = async () => {
         if (!isAuthenticated) {
             navigate("/login");
             return;
         }
 
         try {
-            const token = localStorage.getItem("token");
-            const response = await fetch('http://localhost:8080/enrollment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    activity_id: id
-                })
-            });
+            await toggleEnrollment();
+            const message = isEnrolled ? 'Inscripción cancelada exitosamente!' : 'Inscripción exitosa!';
+            toast.success(message);
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Error al inscribirse en la actividad');
-            }
-
-            toast.success('Inscripción exitosa!');
+            // Actualizar la información de capacidad después de la acción
+            const capacityData = await enrollmentApi.getActivityCapacity(id);
+            setCapacityInfo(capacityData);
         } catch (err) {
             toast.error(err.message);
             setError(err.message);
+            // Si el error es de autenticación, redirigir al login
+            if (err.message.includes('sesión ha expirado') || err.message.includes('token de autenticación')) {
+                navigate('/login');
+            }
         }
     };
 
@@ -71,13 +88,30 @@ const ActivityDetail = () => {
         return imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
     };
 
+    const getCapacityDisplay = () => {
+        if (!capacityInfo) {
+            return <p><strong>Capacidad:</strong> {activity.capacity} personas</p>;
+        }
+
+        const { available_spots } = capacityInfo;
+
+        return (
+            <div className="capacity-info">
+                <p><strong>Capacidad:</strong> {activity.capacity} personas</p>
+                <p><strong>Lugares disponibles:</strong> {available_spots}</p>
+            </div>
+        );
+    };
+
     return (
         <div className="activity-detail-container">
             <button className="back-button" onClick={() => navigate('/activities')}>
                 Volver a Actividades
             </button>
 
-            {error && <div className="error-message">{error}</div>}
+            {(error || enrollmentError) && (
+                <div className="error-message">{error || enrollmentError}</div>
+            )}
 
             <div className="activity-detail-card">
                 {activity.image_url && (
@@ -105,7 +139,7 @@ const ActivityDetail = () => {
                         <h3>Detalles</h3>
                         <p><strong>Profesor:</strong> {activity.profesor}</p>
                         <p><strong>Categoría:</strong> {activity.category}</p>
-                        <p><strong>Capacidad:</strong> {activity.capacity} personas</p>
+                        {getCapacityDisplay()}
                     </div>
 
                     <div className="detail-section">
@@ -119,10 +153,20 @@ const ActivityDetail = () => {
 
                     {isAuthenticated && !isAdmin && (
                         <button
-                            onClick={handleEnrollment}
-                            className="enroll-button"
+                            onClick={handleEnrollmentToggle}
+                            className={isEnrolled ? "cancel-button" : "enroll-button"}
+                            disabled={isLoading || (capacityInfo && capacityInfo.available_spots === 0 && !isEnrolled)}
+                            style={
+                                capacityInfo && capacityInfo.available_spots === 0 && !isEnrolled
+                                    ? { backgroundColor: '#ccc', color: '#888', cursor: 'not-allowed' }
+                                    : {}
+                            }
                         >
-                            Inscribirse
+                            {isLoading
+                                ? 'Procesando...'
+                                : isEnrolled
+                                    ? 'Cancelar Inscripción'
+                                    : (capacityInfo && capacityInfo.available_spots === 0 ? 'Sin cupo disponible' : 'Inscribirse')}
                         </button>
                     )}
 

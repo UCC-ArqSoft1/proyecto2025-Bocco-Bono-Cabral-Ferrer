@@ -165,14 +165,12 @@
         font-size: 1rem;
     }
 }
-/*Forzar color de texto desde CSS*/
+
 .register-form input,
 .register-form select {
-    /* …tus otras propiedades… */
-    color: var(--text-color);      /* <— aquí el color de la variable (negro) */
+    color: var(--text-color);
 }
 
-/* opcionalmente matizas el placeholder */
 .register-form input::placeholder {
-  color: #aaa;
+    color: #aaa;
 }

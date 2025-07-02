@@ -2,7 +2,7 @@ package clients
 
 import (
 	"errors"
-	"gym-api/backend/dao"
+	"gym-api/dao"
 	"time"
 
 	"gorm.io/gorm"
@@ -17,6 +17,7 @@ type EnrollmentRepositoryInterface interface {
 	CountEnrollmentsAndCapacity(activityId int) (int, int, error)
 	CreateEnrollment(userId int, activityId int, date time.Time) error
 	GetUserEnrollments(userId int) ([]dao.Enrollment, error)
+	CancelEnrollment(userId int, activityId int) error
 }
 
 func (er EnrollmentRepository) IsEnrolled(userId, activityId int) (bool, error) {
@@ -67,6 +68,17 @@ func (er EnrollmentRepository) CreateEnrollment(userId int, activityId int, date
 	err := er.DB.Create(&enrollment)
 	if err != nil {
 		return err.Error
+	}
+	return nil
+}
+
+func (er EnrollmentRepository) CancelEnrollment(userId int, activityId int) error {
+	result := er.DB.Where("user_id = ? AND activity_id = ?", userId, activityId).Delete(&dao.Enrollment{})
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("enrollment not found")
 	}
 	return nil
 }

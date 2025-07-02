@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	services "gym-api/backend/services/enrollmentService"
-	"gym-api/backend/utils"
+	services "gym-api/services/enrollmentService"
+	"gym-api/utils"
 	"net/http"
 	"strconv"
 
@@ -15,6 +15,9 @@ type EnrollmentController struct {
 type EnrollmentControllersInterface interface {
 	CreateEnrollment(ctx *gin.Context)
 	GetEnrollment(ctx *gin.Context)
+	CancelEnrollment(ctx *gin.Context)
+	CheckEnrollment(ctx *gin.Context)
+	GetActivityCapacity(ctx *gin.Context)
 }
 
 func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
@@ -56,6 +59,100 @@ func (ec EnrollmentController) CreateEnrollment(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "enrollment created successfully"})
 }
 
+func (ec EnrollmentController) CancelEnrollment(ctx *gin.Context) {
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	customClaims, ok := claims.(*utils.CustomClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+		return
+	}
+
+	userID := customClaims.UserID
+	type CancelEnrollmentRequest struct {
+		ActivityId int `json:"activity_id"`
+	}
+	var request CancelEnrollmentRequest
+	if err := ctx.ShouldBindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	err := ec.EnrollmentService.CancelEnrollment(userID, request.ActivityId)
+	if err != nil {
+		if err.Error() == "user is not enrolled in this activity" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "No estás inscripto a esta actividad"})
+		} else {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error al cancelar la inscripción"})
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": "enrollment cancelled successfully"})
+}
+
+func (ec EnrollmentController) CheckEnrollment(ctx *gin.Context) {
+	claims, exists := ctx.Get("claims")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	customClaims, ok := claims.(*utils.CustomClaims)
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+		return
+	}
+
+	userID := customClaims.UserID
+	activityIdStr := ctx.Query("activity_id")
+	if activityIdStr == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "activity_id is required"})
+		return
+	}
+
+	activityId, err := strconv.Atoi(activityIdStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid activity_id"})
+		return
+	}
+
+	isEnrolled, err := ec.EnrollmentService.IsEnrolled(userID, activityId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error checking enrollment"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"is_enrolled": isEnrolled})
+}
+
+func (ec EnrollmentController) GetActivityCapacity(ctx *gin.Context) {
+	activityIdStr := ctx.Query("activity_id")
+	if activityIdStr == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "activity_id is required"})
+		return
+	}
+
+	activityId, err := strconv.Atoi(activityIdStr)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid activity_id"})
+		return
+	}
+
+	availableSpots, err := ec.EnrollmentService.GetAvailableSpots(activityId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error getting activity capacity"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"available_spots": availableSpots,
+	})
+}
+
 func (ec EnrollmentController) GetEnrollment(ctx *gin.Context) {
 	claims, exists := ctx.Get("claims")
 	if !exists {
@@ -71,7 +168,8 @@ func (ec EnrollmentController) GetEnrollment(ctx *gin.Context) {
 
 	activities, err := ec.EnrollmentService.GetUserEnrollments(customClaims.UserID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		// Devuelve un array vacío en caso de error
+		ctx.JSON(http.StatusOK, []interface{}{})
 		return
 	}
 

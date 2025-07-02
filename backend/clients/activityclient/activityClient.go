@@ -1,7 +1,7 @@
 package clients
 
 import (
-	"gym-api/backend/dao"
+	"gym-api/dao"
 
 	"gorm.io/gorm"
 )

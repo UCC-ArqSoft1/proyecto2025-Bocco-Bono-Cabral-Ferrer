@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"gym-api/backend/domain"
-	services "gym-api/backend/services/activityServices"
+	"gym-api/domain"
+	services "gym-api/services/activityServices"
 	"net/http"
 	"strconv"
 
@@ -56,19 +56,13 @@ func (ac ActivityController) CreateActivity(ctx *gin.Context) {
 		ctx.IndentedJSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
-	validSchedules := []domain.ActivitySchedule{}
-	for _, s := range activityRequest.Schedules {
-		if s.Day != "" && s.StartTime != "" && s.EndTime != "" {
-			validSchedules = append(validSchedules, s)
-		}
-	}
 	err := ac.ActivityService.CreateActivity(activityRequest.Name,
 		activityRequest.Description,
 		activityRequest.Capacity,
 		activityRequest.Category,
 		activityRequest.Profesor,
 		activityRequest.ImageUrl,
-		validSchedules)
+		activityRequest.Schedules)
 	if err != nil {
 		ctx.IndentedJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
