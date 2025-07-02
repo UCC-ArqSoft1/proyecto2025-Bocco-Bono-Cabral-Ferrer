@@ -1,23 +1,23 @@
 package main
 
 import (
-	activityClients "gym-api/backend/clients/activityclient"
-	userClients "gym-api/backend/clients/userClients"
-	userControllers "gym-api/backend/controllers/user"
+	activityClients "gym-api/clients/activityclient"
+	userClients "gym-api/clients/userClients"
+	userControllers "gym-api/controllers/user"
+	"log"
 
-	enrollmentClients "gym-api/backend/clients/enrollmentClient"
-	enrollmentController "gym-api/backend/controllers/enrollment"
-	"gym-api/backend/db"
-	activityServices "gym-api/backend/services/activityServices"
-	enrollmentServices "gym-api/backend/services/enrollmentService"
-	userServices "gym-api/backend/services/userServices"
+	enrollmentClients "gym-api/clients/enrollmentClient"
+	enrollmentController "gym-api/controllers/enrollment"
+	activityServices "gym-api/services/activityServices"
+	enrollmentServices "gym-api/services/enrollmentService"
+	userServices "gym-api/services/userServices"
 
-	activityControllers "gym-api/backend/controllers/activity"
-	"gym-api/backend/middleware"
+	activityControllers "gym-api/controllers/activity"
+	db "gym-api/database"
+	"gym-api/middleware"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2/log"
 )
 
 func main() {
@@ -47,7 +47,7 @@ func main() {
 	userController := userControllers.UserController{UserService: userService}
 
 	enrollmentRepo := enrollmentClients.EnrollmentRepository{DB: dbInstance.DB}
-	enrollmentService := enrollmentServices.EnrollmentService{Repo: enrollmentRepo}
+	enrollmentService := enrollmentServices.EnrollmentService{Repo: enrollmentRepo, ActivityRepo: activityRepo}
 	enrollmentController := enrollmentController.EnrollmentController{EnrollmentService: enrollmentService}
 
 	router.POST("/users/login", userController.Login)
@@ -60,13 +60,19 @@ func main() {
 	authorized.Use(middleware.AuthMiddleware())
 
 	authorized.POST("/enrollment", enrollmentController.CreateEnrollment)
-	//authorized.GET("/activities", activityController.GetActivities)
-	//authorized.GET("/activities/:id", activityController.GetActivityByID)
-	authorized.POST("/activities", activityController.CreateActivity)
-	authorized.DELETE("/activities/:id", activityController.DeleteActivity)
-	authorized.PUT("/activities/:id", activityController.UpdateActivity)
+	authorized.DELETE("/enrollment", enrollmentController.CancelEnrollment)
+	authorized.GET("/enrollment/check", enrollmentController.CheckEnrollment)
+	authorized.GET("/enrollment/capacity", enrollmentController.GetActivityCapacity)
 	authorized.GET("/enrollments", enrollmentController.GetEnrollment)
 
-	log.Info("Starting server")
+	// Admin routes - require both authentication and admin privileges
+	admin := router.Group("/")
+	admin.Use(middleware.AuthMiddleware(), middleware.AdminMiddleware())
+
+	admin.POST("/activities", activityController.CreateActivity)
+	admin.DELETE("/activities/:id", activityController.DeleteActivity)
+	admin.PUT("/activities/:id", activityController.UpdateActivity)
+
+	log.Println("Starting server")
 	router.Run(":8080")
 }

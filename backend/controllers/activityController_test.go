@@ -2,8 +2,8 @@ package controllers_test
 
 import (
 	"fmt"
-	controllers "gym-api/backend/controllers/activity"
-	"gym-api/backend/mocks"
+	controllers "gym-api/controllers/activity"
+	"gym-api/mocks"
 	"net/http"
 	"net/http/httptest"
 	"strings"

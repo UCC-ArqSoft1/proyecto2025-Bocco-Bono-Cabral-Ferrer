@@ -45,12 +45,12 @@ const Register = () => {
 
         try {
             const success = await register({
-                nombre: formData.nombre,
-                apellido: formData.apellido,
+                first_name: formData.nombre,
+                last_name: formData.apellido,
                 email: formData.email,
                 password: formData.password,
-                fechaNacimiento: formData.fechaNacimiento,
-                sexo: formData.sexo
+                birth_date: formData.fechaNacimiento,
+                sex: formData.sexo
             });
 
             if (success) {

@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"errors"
-	"gym-api/backend/domain"
-	services "gym-api/backend/services/userServices"
+	"gym-api/domain"
+	services "gym-api/services/userServices"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

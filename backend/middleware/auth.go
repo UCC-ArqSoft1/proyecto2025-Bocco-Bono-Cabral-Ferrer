@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"fmt"
-	"gym-api/backend/utils"
+	"gym-api/utils"
 	"net/http"
 	"strings"
 
@@ -54,6 +54,36 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// Set claims in context
 		c.Set("claims", claims)
+		c.Next()
+	}
+}
+
+// AdminMiddleware validates that the user is an administrator (UserTypeID == 1)
+func AdminMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// First, ensure user is authenticated
+		claims, exists := c.Get("claims")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "authentication required"})
+			c.Abort()
+			return
+		}
+
+		// Type assert to get CustomClaims
+		customClaims, ok := claims.(*utils.CustomClaims)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
+			c.Abort()
+			return
+		}
+
+		// Check if user is admin (UserTypeID == 1)
+		if customClaims.UserTypeID != 1 {
+			c.JSON(http.StatusForbidden, gin.H{"error": "administrator privileges required"})
+			c.Abort()
+			return
+		}
+
 		c.Next()
 	}
 }

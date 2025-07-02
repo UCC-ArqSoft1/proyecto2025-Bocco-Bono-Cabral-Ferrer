@@ -12,7 +12,7 @@ INSERT INTO activities (
     20,
     'Yoga',
     'Laura Martínez',
-    'images/yoga.jpg'
+    'images/yoga.jpeg'
 ),
 (
     'CrossFit Avanzado',
@@ -20,7 +20,7 @@ INSERT INTO activities (
     15,
     'CrossFit',
     'Carlos Gómez',
-    'images/crosfit.jpg'
+    'images/crosfit.jpeg'
 ),
 (
     'Spinning',
@@ -28,7 +28,7 @@ INSERT INTO activities (
     25,
     'Cardio',
     'Ana Rodríguez',
-    'images/spinning.jpg'
+    'images/spinning.jpeg'
 );
 INSERT INTO activity_schedules(
     activity_id, day, start_time, end_time

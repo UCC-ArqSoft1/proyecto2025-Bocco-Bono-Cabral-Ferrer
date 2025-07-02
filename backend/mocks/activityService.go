@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"gym-api/backend/domain"
+	"gym-api/domain"
 )
 
 type MockActivityService struct{}

@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Header from "./header.jsx";
 import Footer from "./footer.jsx";
-import "../styles/layout.css";
+import "../Styles/layout.css";
 
 const Layout = () => {
     return (
@@ -14,5 +14,4 @@ const Layout = () => {
         </div>
     );
 }
-
 export default Layout;

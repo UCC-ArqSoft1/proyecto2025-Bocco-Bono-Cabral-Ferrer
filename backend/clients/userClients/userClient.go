@@ -3,7 +3,7 @@ package clients
 import (
 	"errors"
 	"fmt"
-	"gym-api/backend/dao"
+	"gym-api/dao"
 
 	"gorm.io/gorm"
 )

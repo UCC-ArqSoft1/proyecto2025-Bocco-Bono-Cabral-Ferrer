@@ -1,0 +1,194 @@
+.my-enrollments-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.enrollments-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.enrollments-header h2 {
+    color: #333;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.no-enrollments {
+    color: #666;
+    font-size: 1.1rem;
+    font-style: italic;
+}
+
+.enrollments-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.enrollment-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 2px solid #2196F3;
+}
+
+.enrollment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.enrollment-content {
+    padding: 1.5rem;
+    cursor: pointer;
+}
+
+.enrollment-content h3 {
+    color: #333;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    border-bottom: 2px solid #2196F3;
+    padding-bottom: 0.5rem;
+}
+
+.activity-details {
+    margin-bottom: 1rem;
+}
+
+.activity-details p {
+    margin: 0.5rem 0;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+.activity-details strong {
+    color: #333;
+    font-weight: 600;
+}
+
+.schedule-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid #2196F3;
+}
+
+.schedule-info h4 {
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.schedule-info p {
+    margin: 0.3rem 0;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.view-details {
+    text-align: center;
+    color: #2196F3;
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+}
+
+.enrollment-actions {
+    padding: 1rem 1.5rem 1.5rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+}
+
+.cancel-enrollment-button {
+    width: 100%;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+.cancel-enrollment-button:hover:not(:disabled) {
+    background-color: #d32f2f;
+}
+
+.cancel-enrollment-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.login-prompt,
+.admin-message {
+    text-align: center;
+    padding: 3rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.login-prompt p,
+.admin-message p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.login-button {
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.login-button:hover {
+    background-color: #1976D2;
+}
+
+.loading,
+.error {
+    text-align: center;
+    padding: 3rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.loading {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+.error {
+    color: #f44336;
+    font-size: 1.1rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .enrollments-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .enrollment-card {
+        margin: 0 0.5rem;
+    }
+
+    .my-enrollments-container {
+        padding: 0 0.5rem;
+    }
+}
